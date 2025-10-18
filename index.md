@@ -4,7 +4,7 @@ Comprehensive OSCP penetration testing notes optimized for quick command referen
 
 ## Quick Start
 
-**Start Here:** [Service Discovery](Service Discovery.md)
+**Start Here:** [[Service Discovery]]
 
 This repository contains both copy-paste ready commands (vClip-indexed) and detailed methodology (for manual reference).
 
@@ -50,24 +50,9 @@ Add to /etc/hosts:
 ## Structure
 
 ### Initial Discovery
-- [Service Discovery](Service Discovery.md) - Port scanning and initial enumeration
+- [[Service Discovery]] - Port scanning and initial enumeration
 
 ### Service-Specific Enumeration
-- [FTP (20, 21)](Service Enumeration/20,21 FTP.md)
-- [SSH (22)](Service Enumeration/22 SSH.md)
-- [SMTP (25, 587)](Service Enumeration/25,587 SMTP.md)
-- [DNS (53)](Service Enumeration/53 DNS.md)
-- [HTTP/HTTPS (80, 443)](Service Enumeration/80, 443 HTTP.md)
-- [Kerberos (88)](Service Enumeration/88 Kerberos.md)
-- [MSRPC (135)](Service Enumeration/135 WMI,MSRPC.md)
-- [SMB (139, 445)](Service Enumeration/139,445 SMB.md)
-- [SNMP (161)](Service Enumeration/161 SNMP.md)
-- [LDAP(S) (389, 636)](Service Enumeration/389,636 LDAP(S).md)
-- [MSSQL (1433)](Service Enumeration/1433 MSSQL.md)
-- [NFS (2049)](Service Enumeration/2049 NFS.md)
-- [MySQL (3306)](Service Enumeration/3306 MySQL.md)
-- [RDP (3389)](Service Enumeration/3389 RDP.md)
-- [WinRM (5985, 5986)](Service Enumeration/5985, 5986 WinRM.md)
 
 ### Privilege Escalation
 - [Linux Privilege Escalation](Local Privilege Escalation/Linux Privilege Escalation.md)
@@ -85,15 +70,6 @@ Add to /etc/hosts:
 - [OSCP Exam Strategy](Additional Notes/OSCP Exam Strategy.md)
 - [LLM Usage Guidelines](Additional Notes/LLM.md)
 
-## Exam Day Workflow
-
-1. Start with [Service Discovery](Service Discovery.md) for initial enumeration
-2. Follow service-specific guides based on open ports
-3. Use privilege escalation guides after initial access
-4. For AD environments, use the AD attack chain methodology
-5. Reference additional techniques as needed
-6. Use [Evidence Collection](Additional Notes/Evidence Collection & Reporting.md) throughout
-
 ## Using These Notes
 
 ### With vClip (Recommended for Exam)
@@ -104,7 +80,7 @@ cd vClip
 pipx install .
 vclip --create-config
 
-# Edit ~/.config/vclip/config.yaml to add this directory
+# Edit ~/.config/vclip/config.yaml to add this template directory
 # Then use during exam:
 vclip  # Opens rofi for instant command search
 ```

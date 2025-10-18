@@ -8,7 +8,6 @@ whoami /all
 ## Display current user's group memberships
 ```powershell
 whoami /groups
-whoami /priv
 ```
 
 ## List all local users
@@ -20,7 +19,6 @@ Get-LocalUser
 ## Get details for specific user
 ```powershell
 net user administrator
-net user %username%
 ```
 
 ## List all local groups

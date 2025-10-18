@@ -80,7 +80,6 @@ This is faster than running `-sC -sV -p-` directly, especially on boxes with few
 UDP scanning is slow. Prioritize based on time:
 - Top 100 ports: Always run (catches DNS, SNMP, TFTP)
 - Top 1000 ports: Run if you have time or suspect UDP services
-- Full UDP scan: Rarely worth it in OSCP exam environment
 
 Common critical UDP services:
 - 53 (DNS)
@@ -88,10 +87,52 @@ Common critical UDP services:
 - 161 (SNMP)
 - 500 (IPSec)
 
+## Output File Naming
+
+Use consistent naming:
+- `nmap/all_ports.gnmap` - Initial port discovery
+- `nmap/full_tcp.*` - Detailed TCP enumeration
+- `nmap/top_udp.*` - UDP scan results
+- Service-specific: `web/`, `smb/`, `ftp/`, etc.
+
+This makes report writing easier and keeps evidence organized.
+
+## Time Management
+
+**First 15 minutes:**
+- Launch AutoRecon in background OR run fast nmap
+- While scanning, review nmap results as they come in
+- Start web enumeration immediately if HTTP is detected
+
+**Next 30 minutes:**
+- Deep dive into highest priority services
+- Launch background tasks (directory bruteforce, hash cracking)
+- Take notes on findings
+
+---
+
+# Service-Specific Enumeration Checklist 
+
+After initial discovery, jump to service-specific enumeration. Only keep links for what is present on the target.
+
+- [ ] [[20,21 FTP]]
+- [ ] [[22 SSH]]
+- [ ] [[25,587 SMTP]]
+- [ ] [[80, 443 HTTP]]
+- [ ] [[88 Kerberos]]
+- [ ] [[135 WMI,MSRPC]]
+- [ ] [[139,445 SMB]]
+- [ ] [[161 SNMP]]
+- [ ] [[389,636 LDAP(S)]]
+- [ ] [[1433 MSSQL]]
+- [ ] [[2049 NFS]]
+- [ ] [[3306 MySQL]]
+- [ ] [[3389 RDP]]
+- [ ] [[5985, 5986 WinRM]]
+
 ## Service Enumeration Priority
 
 After port discovery, enumerate services in this order:
-
 ### Critical Services (Immediate Focus)
 1. HTTP/HTTPS (80, 443, 8080, 8443)
 2. SMB (139, 445)
@@ -120,56 +161,3 @@ After port discovery, enumerate services in this order:
 - SMTP (25, 587)
 - SNMP (161)
 - NFS (2049)
-
-## Output File Naming
-
-Use consistent naming:
-- `nmap/all_ports.gnmap` - Initial port discovery
-- `nmap/full_tcp.*` - Detailed TCP enumeration
-- `nmap/top_udp.*` - UDP scan results
-- Service-specific: `web/`, `smb/`, `ftp/`, etc.
-
-This makes report writing easier and keeps evidence organized.
-
-## Time Management
-
-**First 15 minutes:**
-- Launch AutoRecon in background OR run fast nmap
-- While scanning, review nmap results as they come in
-- Start web enumeration immediately if HTTP is detected
-
-**Next 30 minutes:**
-- Deep dive into highest priority services
-- Launch background tasks (directory bruteforce, hash cracking)
-- Take notes on findings
-
-## Common Pitfalls
-
-**Skipping UDP**: SNMP and DNS can provide critical enumeration data.
-
-**Not saving output**: Always use `-oA` to save nmap results in all formats.
-
-**Running -sC -sV on all 65535 ports**: Extremely slow. Do fast discovery first.
-
-**Forgetting -Pn**: OSCP machines often don't respond to ping. Always use -Pn.
-
----
-
-# Service-Specific Enumeration Links
-
-After initial discovery, jump to service-specific enumeration:
-
-- FTP (20, 21): See Service Enumeration/20,21 FTP.md
-- SSH (22): See Service Enumeration/22 SSH.md
-- DNS (53): See Service Enumeration/53 DNS.md
-- HTTP/HTTPS (80, 443): See Service Enumeration/80, 443 HTTP.md
-- Kerberos (88): See Service Enumeration/88 Kerberos.md
-- MSRPC (135): See Service Enumeration/135 WMI,MSRPC.md
-- SMB (139, 445): See Service Enumeration/139,445 SMB.md
-- SNMP (161): See Service Enumeration/161 SNMP.md
-- LDAP (389, 636): See Service Enumeration/389,636 LDAP(S).md
-- MSSQL (1433): See Service Enumeration/1433 MSSQL.md
-- NFS (2049): See Service Enumeration/2049 NFS.md
-- MySQL (3306): See Service Enumeration/3306 MySQL.md
-- RDP (3389): See Service Enumeration/3389 RDP.md
-- WinRM (5985, 5986): See Service Enumeration/5985, 5986 WinRM.md
