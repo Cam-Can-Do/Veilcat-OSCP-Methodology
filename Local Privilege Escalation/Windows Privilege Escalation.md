@@ -1,19 +1,13 @@
 # Windows Privilege Escalation
 
 ## Display current user and all privileges
-```powershell
+```cmd
 whoami /all
 ```
 
-## Display current user's group memberships
-```powershell
-whoami /groups
-```
-
 ## List all local users
-```powershell
-net user
-Get-LocalUser
+```cmd
+net user 
 ```
 
 ## Get details for specific user
@@ -53,7 +47,6 @@ Get-LocalGroupMember "Backup Operators"
 ## Display system information
 ```powershell
 systeminfo
-systeminfo | findstr /B /C:"OS Name" /C:"OS Version" /C:"Hotfix"
 ```
 
 ## Display network configuration
@@ -71,10 +64,9 @@ route print
 netstat -ano
 ```
 
-## Search for plaintext secrets in user files
+## PowerShell Find Secrets
 ```powershell
-Get-ChildItem -Path C:\Users -Include *.txt,*.ini,*.config -File -Recurse -ErrorAction SilentlyContinue
-Get-ChildItem -Path C:\ -Include *password*,*cred*,*vnc* -Recurse -Force -ErrorAction SilentlyContinue
+Get-ChildItem -Path C:\Users -Include *.txt,*password*,*cred*,*vnc* -Recurse -Force -ErrorAction SilentlyContinue
 ```
 
 ## List installed programs from 32-bit registry
@@ -401,6 +393,7 @@ reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /v evil /t REG_SZ /d 
 - Registry credentials (VNC, auto-login)
 - Configuration files with passwords
 - Saved credentials (cmdkey /list)
+- https://github.com/AlessandroZ/LaZagne/releases
 
 **Other Vectors:**
 - Writable scheduled tasks running as SYSTEM

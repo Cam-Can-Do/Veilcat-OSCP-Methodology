@@ -188,15 +188,6 @@ If SSH agent forwarding is enabled (ForwardAgent yes), you can hijack the agent 
 SSH_AUTH_SOCK=/tmp/ssh-agent-socket ssh user@target
 ```
 
-## Next Steps
-
-Once SSH access is obtained:
-1. Enumerate system for privilege escalation
-2. Check sudo permissions: sudo -l
-3. Look for SUID binaries: find / -perm -4000 2>/dev/null
-4. Search for credentials in home directories
-5. Check for other users and their files
-6. Setup persistence if needed
 
 ---
 

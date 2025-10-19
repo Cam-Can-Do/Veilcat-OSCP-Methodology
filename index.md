@@ -13,11 +13,12 @@ This repository contains both copy-paste ready commands (vClip-indexed) and deta
 Use this template structure for each target during the exam:
 
 ### Host Information
-- Target IP:
-- Operating System:
-- Domain/Hostname:
-- Difficulty:
-- Start Time:
+- Target IP: 
+- Operating System: 
+- Architecture: 
+- Domain/Hostname: 
+- Difficulty: 
+- Start Time: 
 
 ### Summary of Findings
 
