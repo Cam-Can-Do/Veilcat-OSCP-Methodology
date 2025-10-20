@@ -1,5 +1,3 @@
-# DNS Enumeration (53)
-
 ## Perform DNS reverse lookup
 ```bash
 dig -p 53 -x $IP @$IP
@@ -19,12 +17,6 @@ dnsrecon -d domain.local -t std -n $IP
 ## Brute force subdomains with dnsrecon
 ```bash
 dnsrecon -d domain.local -D /usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt -t brt -n $IP
-```
-
-## Simple DNS query
-```bash
-# host (simpler) OR nslookup (interactive) OR dig (detailed)
-host domain.local $IP
 ```
 
 ## Query specific DNS record types
@@ -55,21 +47,6 @@ A successful zone transfer reveals:
 - Name servers
 - Service records (SRV)
 - Complete network topology
-
-**Testing for zone transfer:**
-If AXFR succeeds, you get complete domain information without needing to brute force. This is a critical misconfiguration that should always be tested.
-
-## DNS Record Types
-
-**A records:** Hostname to IPv4 address mapping
-**AAAA records:** Hostname to IPv6 address mapping
-**MX records:** Mail server records (shows email infrastructure)
-**TXT records:** Text records (may contain SPF, DKIM, or sensitive info)
-**NS records:** Name server records
-**CNAME records:** Canonical name (alias) records
-**PTR records:** Reverse DNS lookup (IP to hostname)
-**SRV records:** Service records (shows available services)
-**SOA records:** Start of Authority (domain metadata)
 
 ## Subdomain Enumeration
 
@@ -116,32 +93,6 @@ Look for signs of DNS tunneling (data exfiltration via DNS):
 - High entropy in subdomain names
 - Queries to suspicious TLDs
 
-## Information in TXT Records
-
-TXT records often contain:
-- SPF records (authorized mail servers)
-- DKIM keys (email authentication)
-- Domain verification tokens
-- Configuration information
-- Sometimes credentials (rare but happens)
-
-## DNS Enumeration Tools
-
-**dig:** Manual DNS queries, most flexible
-**dnsrecon:** Automated enumeration with multiple scan types
-**dnsenum:** Comprehensive DNS enumeration
-**fierce:** Subdomain brute forcing
-**host:** Simple DNS lookups
-**nslookup:** Interactive DNS queries
-
-## Common DNS Misconfigurations
-
-1. **Zone transfer allowed to any IP**
-2. **Recursive queries enabled for external IPs**
-3. **DNS cache poisoning possible**
-4. **Outdated BIND versions with known CVEs**
-5. **DNS amplification attacks possible**
-
 ## Active Directory DNS
 
 In AD environments, DNS is critical:
@@ -149,15 +100,6 @@ In AD environments, DNS is critical:
 - Find DCs via SRV records: dig @$IP _ldap._tcp.dc._msdcs.domain.local SRV
 - Kerberos: _kerberos._tcp.domain.local
 - Global catalog: _gc._tcp.domain.local
-
-## Next Steps
-
-Once DNS enumeration is complete:
-1. Document all discovered hostnames and IPs
-2. Add findings to /etc/hosts for name resolution
-3. Scan discovered hosts for open ports
-4. Prioritize targets (mail servers, VPN, admin portals)
-5. Use discovered subdomains for web enumeration
 
 ---
 

@@ -1,5 +1,3 @@
-# Active Directory Attack Chain
-
 ## Identify if target is domain-joined
 ```bash
 nmap -p 88,389,636,3268,3269 $IP

@@ -48,25 +48,9 @@ nmap -sU --top-ports 1000 -T4 -Pn $IP -oA nmap/extended_udp
 
 # Service Discovery Methodology
 
-## Initial Setup
-
-Before starting enumeration, create a structured workspace:
-- Set IP and DOMAIN environment variables
-- Create subdirectories for each service type
-- Use consistent naming for output files
-
 ## AutoRecon vs Manual
 
-**AutoRecon**: Best for comprehensive automated scanning. Use when:
-- Time is not critical
-- You want comprehensive coverage
-- You're multitasking on multiple boxes
-
-**Manual scanning**: Better for:
-- Faster initial results
-- More control over scan speed/noise
-- Understanding what's running before deeper enumeration
-
+Run manual scans first and start enumerating high priority services while autorecon runs in the background.
 ## TCP Port Discovery Strategy
 
 Two-phase approach:
@@ -87,49 +71,11 @@ Common critical UDP services:
 - 161 (SNMP)
 - 500 (IPSec)
 
-## Output File Naming
-
-Use consistent naming:
-- `nmap/all_ports.gnmap` - Initial port discovery
-- `nmap/full_tcp.*` - Detailed TCP enumeration
-- `nmap/top_udp.*` - UDP scan results
-- Service-specific: `web/`, `smb/`, `ftp/`, etc.
-
-This makes report writing easier and keeps evidence organized.
-
-## Time Management
-
-**First 15 minutes:**
-- Launch AutoRecon in background OR run fast nmap
-- While scanning, review nmap results as they come in
-- Start web enumeration immediately if HTTP is detected
-
-**Next 30 minutes:**
-- Deep dive into highest priority services
-- Launch background tasks (directory bruteforce, hash cracking)
-- Take notes on findings
-
 ---
 
 # Service-Specific Enumeration Checklist 
 
-After initial discovery, jump to service-specific enumeration. Only keep links for what is present on the target.
-
-- [ ] [[20,21 FTP]]
-- [ ] [[22 SSH]]
-- [ ] [[25,587 SMTP]]
-- [ ] [[80, 443 HTTP]]
-- [ ] [[88 Kerberos]]
-- [ ] [[135 WMI,MSRPC]]
-- [ ] [[139,445 SMB]]
-- [ ] [[161 SNMP]]
-- [ ] [[389,636 LDAP(S)]]
-- [ ] [[1433 MSSQL]]
-- [ ] [[2049 NFS]]
-- [ ] [[3306 MySQL]]
-- [ ] [[3389 RDP]]
-- [ ] [[5985, 5986 WinRM]]
-
+After initial discovery, jump to service-specific enumeration in the "Service Enumeration" folder. 
 ## Service Enumeration Priority
 
 After port discovery, enumerate services in this order:

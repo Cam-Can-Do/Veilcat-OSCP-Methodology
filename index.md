@@ -6,84 +6,33 @@ Comprehensive OSCP penetration testing notes optimized for quick command referen
 
 **Start Here:** [[Service Discovery]]
 
-This repository contains both copy-paste ready commands (vClip-indexed) and detailed methodology (for manual reference).
+This repository contains both copy-paste ready commands and detailed methodology for manual reference. 
 
-## Per-Machine Template
+Commands are formatted to be compatible with [vClip](https://github.com/Cam-Can-Do/vClip), my snippet management utility.
 
-Use this template structure for each target during the exam:
+## Note Templates
+See the "Note Templates" folder. Make a copy of "IP-Hostname.md" for each machine, and one copy of "AD-Domain.md" for Active Directory labs.
 
-### Host Information
-- Target IP: 
-- Operating System: 
-- Architecture: 
-- Domain/Hostname: 
-- Difficulty: 
-- Start Time: 
+*These templates are minimal by design. They are not meant to be a final report, but rather a lightweight frame for recording steps.*
 
-### Summary of Findings
+*Previously I cloned this entire methodology folder for each machine and filled it in with command output as I worked; I found this to be cumbersome, as I didn't always need every command, and ended up deleting more text than I wrote for each machine!*
 
-#### Domain/Host Name
-Add to /etc/hosts:
-```
-
-```
-
-#### Vulnerabilities and Suggested Remediation
--
-
-#### Flags
-```
-
-```
-
-#### Hashes
-```
-
-```
-
-#### Credentials
-```
-
-```
 
 ---
-
-## Structure
-
-### Initial Discovery
-- [[Service Discovery]] - Port scanning and initial enumeration
-
-### Service-Specific Enumeration
-
-### Privilege Escalation
-- [Linux Privilege Escalation](Local Privilege Escalation/Linux Privilege Escalation.md)
-- [Windows Privilege Escalation](Local Privilege Escalation/Windows Privilege Escalation.md)
-
-### Active Directory
-- [Active Directory Enumeration](Active Directory/Active Directory Enumeration.md)
-- [Active Directory Attack Chain](Active Directory/Active Directory Attack Chain.md)
-
-### Additional Techniques
-- [File Transfer Techniques](Additional Notes/File Transfer Techniques.md)
-- [Tunneling](Additional Notes/Tunneling.md)
-- [SQL Injection](Additional Notes/SQL Injection.md)
-- [Evidence Collection & Reporting](Additional Notes/Evidence Collection & Reporting.md)
-- [OSCP Exam Strategy](Additional Notes/OSCP Exam Strategy.md)
-- [LLM Usage Guidelines](Additional Notes/LLM.md)
-
 ## Using These Notes
 
 ### With vClip (Recommended for Exam)
 Quick command access via fuzzy search:
 ```bash
 # Install and configure vClip
+git clone https://github.com/Cam-Can-Do/vClip
 cd vClip
 pipx install .
 vclip --create-config
 
-# Edit ~/.config/vclip/config.yaml to add this template directory
+# Edit ~/.config/vclip/config.yaml to add this directory, as well as any others of your choosing!
 # Then use during exam:
-vclip  # Opens rofi for instant command search
+vclip --no-prompt # Opens rofi for instant command search; I recommend binding this to a hotkey.
 ```
 
 ### Manual Reference
@@ -96,8 +45,6 @@ These notes are optimized for vClip:
 - **H2**: Command description (vClip-indexed for fuzzy search)
 - **Code blocks**: Copy-paste ready commands
 - **Content below `---`**: Methodology and explanations (not indexed by vClip)
-
-See [vClip/README.md](vClip/README.md) for full documentation.
 
 ## Credits & Resources
 

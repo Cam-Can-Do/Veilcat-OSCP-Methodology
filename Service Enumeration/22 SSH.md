@@ -1,13 +1,6 @@
-# SSH Enumeration (22)
-
-## Run nmap SSH enumeration scripts
+## nmap SSH enumeration scripts
 ```bash
 nmap --script=ssh2-enum-algos,ssh-hostkey,ssh-auth-methods -p 22 $IP
-```
-
-## Grab SSH banner with netcat
-```bash
-nc -nv $IP 22
 ```
 
 ## Audit SSH configuration with ssh-audit
@@ -15,34 +8,9 @@ nc -nv $IP 22
 ssh-audit $IP -p 22
 ```
 
-## Test SSH login with username
-```bash
-ssh user@$IP
-```
-
-## Connect with SSH key
-```bash
-ssh -i id_rsa user@$IP
-```
-
-## Set correct permissions on SSH private key
-```bash
-chmod 600 id_rsa
-```
-
 ## Convert SSH key to John format for cracking
 ```bash
 ssh2john id_rsa > id_rsa.hash
-```
-
-## Crack encrypted SSH key with John
-```bash
-john --wordlist=/usr/share/wordlists/rockyou.txt id_rsa.hash
-```
-
-## Brute force SSH with hydra (use sparingly)
-```bash
-hydra -l admin -P /usr/share/wordlists/rockyou.txt ssh://$IP -t 4
 ```
 
 ## Create local port forward via SSH
@@ -100,21 +68,14 @@ Look for SSH keys in:
 - Backup files
 - Git repositories
 - Common paths: .ssh/id_rsa, .ssh/id_dsa, .ssh/id_ecdsa, .ssh/id_ed25519
+## SSH Authorized Keys
 
-## SSH Key Permissions
-
-SSH requires strict permissions on private keys:
+If you can write to ~/.ssh/authorized_keys:
 ```bash
-chmod 600 id_rsa      # Private key must be 600
-chmod 644 id_rsa.pub  # Public key can be 644
+echo "your_public_key" >> ~/.ssh/authorized_keys
 ```
 
-## Cracking Encrypted Keys
-
-If SSH key is password-protected:
-1. Convert to hash format with ssh2john
-2. Crack with John the Ripper or hashcat
-3. Use cracked password to decrypt key
+This gives persistent SSH access without password.
 
 ## SSH Tunneling
 
@@ -126,53 +87,6 @@ Creates SOCKS proxy for routing traffic through SSH. Configure proxychains to us
 
 **Remote Port Forward:**
 Forward remote port back to attacker machine. Useful for reverse tunnels from restricted networks.
-
-## SSH Configuration Analysis
-
-If you gain access, check /etc/ssh/sshd_config for:
-- PermitRootLogin yes (allows root login)
-- PasswordAuthentication yes (allows password auth)
-- PermitEmptyPasswords yes (critical vulnerability)
-- X11Forwarding yes (may allow GUI app tunneling)
-- AllowUsers/DenyUsers (access control lists)
-
-## Weak Algorithms
-
-ssh-audit will identify weak or deprecated algorithms:
-- 3DES encryption (deprecated)
-- MD5 HMAC (weak)
-- SHA-1 HMAC (weak)
-- CBC mode ciphers (vulnerable to attacks)
-
-## Known SSH CVEs
-
-- CVE-2018-15473: Username enumeration timing attack
-- CVE-2020-15778: Command injection via scp
-- CVE-2021-41617: Privilege escalation
-- CVE-2016-20012: MaxAuthTries bypass
-
-Check discovered version against CVE databases.
-
-## Brute Force Considerations
-
-**Only use brute force when:**
-- No other options available
-- Small, targeted username/password lists
-- Account lockout policy is known
-
-**Recommendations:**
-- Use -t 4 flag to limit threads (avoid overwhelming service)
-- Start with top 100 passwords, not entire rockyou.txt
-- Try password spraying (one password, many users) instead
-
-## SSH Authorized Keys
-
-If you can write to ~/.ssh/authorized_keys:
-```bash
-echo "your_public_key" >> ~/.ssh/authorized_keys
-```
-
-This gives persistent SSH access without password.
 
 ## Restricted Shell Escape
 
@@ -194,5 +108,3 @@ SSH_AUTH_SOCK=/tmp/ssh-agent-socket ssh user@target
 # References
 
 - https://book.hacktricks.xyz/network-services-pentesting/pentesting-ssh
-- https://stribika.github.io/2015/01/04/secure-secure-shell.html
-- https://www.ssh.com/academy/ssh/tunneling

