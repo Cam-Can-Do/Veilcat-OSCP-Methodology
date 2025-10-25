@@ -2,12 +2,15 @@
 OS:
 Architecture:
 
-# Credentials
+# Local Users/Credentials
 
 ## Flags
 
-# Service Enumeration
+---
+# Service Discovery
 ## Open Ports & Priority
+
+# Service Enumeration
 
 # Initial Access
 

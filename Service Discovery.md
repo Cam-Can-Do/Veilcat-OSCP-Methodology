@@ -1,10 +1,9 @@
 # Initial Service Discovery
 
-## Quick setup - Create working directory
+## Quick setup - Create working directories from hosts.txt
 ```bash
 export IP=$IP
-export DOMAIN=target.local
-mkdir -p $IP/{nmap,web,smb,ftp,exploit,loot}
+mkdir -p $IP/{nmap,web,exploit,loot}
 cd $IP
 ```
 
@@ -13,20 +12,15 @@ cd $IP
 autorecon $IP --only-scans-dir
 ```
 
-## View AutoRecon full TCP scan results
-```bash
-cat results/$IP/scans/_full_tcp_nmap.txt
-```
-
 ## Fast TCP port discovery with nmap
 ```bash
 nmap --min-rate 4500 --max-rtt-timeout 1500ms -p- -Pn $IP -oG nmap/all_ports.gnmap
 ```
 
-## Extract open TCP ports from nmap scan
+## Nmap open TCP ports to markdown checklist
 ```bash
-TCP_PORTS=$(grep -oP '\d+/open' nmap/all_ports.gnmap | cut -d/ -f1 | paste -sd, -)
-echo "Open TCP ports: $TCP_PORTS"
+TCP_PORTS=$(grep -oP '\d+/open' nmap/all_ports.gnmap | cut -d/ -f1 | sed 's/^/- \[\ \]\ /')
+echo "TCP:\n$TCP_PORTS"
 ```
 
 ## Run nmap service detection and scripts on open ports
