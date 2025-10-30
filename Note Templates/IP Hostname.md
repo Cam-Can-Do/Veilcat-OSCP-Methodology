@@ -4,11 +4,11 @@ Architecture:
 
 # Local Users/Credentials
 
-## Flags
-
 ---
 # Service Discovery
+
 ## Open Ports & Priority
+
 
 # Service Enumeration
 

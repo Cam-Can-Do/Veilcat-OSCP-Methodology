@@ -370,20 +370,6 @@ Create a file with these common AD passwords:
 - Kerberoastable users with admin access
 - Users with GenericAll/WriteDacl on sensitive objects
 
-### NetExec vs Impacket
-
-**Use NetExec for:**
-- Password spraying across multiple hosts
-- Quick credential validation
-- Network-wide enumeration
-- Generating relay target lists
-
-**Use Impacket for:**
-- Targeted attacks on specific hosts
-- ASREPRoasting and Kerberoasting
-- Secretsdump for credential extraction
-- Golden/Silver ticket creation
-
 ### Common AD Attack Chains
 
 **Chain 1: Anonymous LDAP -> ASREPRoast -> WinRM**

