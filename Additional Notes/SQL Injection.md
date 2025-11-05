@@ -1,4 +1,8 @@
-# SQL Injection
+Refer to https://tib3rius.com/sqli 
+
+***SQLMAP IS NOT ALLOWED ON OSCP***
+
+---
 
 ## Test parameter for SQL injection with single quote
 
@@ -341,8 +345,6 @@ sqlmap -u http://$IP/page.php?id=1 --cookie="PHPSESSID=abcd1234" --batch
 ' UNION SELECT 1,name,3 FROM syscolumns WHERE id=(SELECT id FROM sysobjects WHERE name='users')--
 ```
 
----
-
 ## SQL Injection Fundamentals
 
 SQL injection occurs when user input is improperly sanitized before being included in SQL queries. This allows attackers to manipulate database queries to extract data, bypass authentication, or execute commands on the underlying system.
@@ -388,10 +390,6 @@ Uses UTL_FILE for file operations. DBMS_LOCK.SLEEP for delays. Different syntax 
 6. Extract sensitive data from identified tables
 7. Attempt privilege escalation or command execution if possible
 
-## SQLMap Usage
-
-SQLMap automates SQL injection exploitation. Use for confirmed injection points to save time. Start with basic enumeration before attempting shells. Always use batch mode during OSCP exam to avoid interactive prompts. Be aware that automated tools may be noisy and trigger defenses.
-
 ## Common Bypasses
 
 ### Comment Syntax
@@ -410,17 +408,3 @@ Reading files reveals sensitive configuration, source code, or credentials. Writ
 ## Privilege Escalation
 
 After initial injection, attempt to escalate privileges within database. MySQL can be escalated to FILE privilege. MSSQL xp_cmdshell provides OS access. Check if current user has admin privileges. Attempt to enable dangerous stored procedures or functions.
-
-## OSCP Exam Tips
-
-1. Test for injection manually before using sqlmap
-2. Focus on data extraction rather than exploitation
-3. Document all successful payloads for reporting
-4. Try different encodings if standard payloads fail
-5. Check both GET and POST parameters
-6. Don't spend too long if injection doesn't work quickly
-7. Look for alternative paths if SQL injection is blocked
-
-## References
-
-https://tib3rius.com/sqli - Comprehensive SQL injection guide

@@ -37,6 +37,12 @@ Replace the IP/subnet with that of the internal network that we're using the age
 sudo ip route add 192.168.1.0/24 dev ligolo
 ```
 
+## Ligolo-ng Listener Add
+Routes :1234 on the agent to 4321 on the proxy server.
+```
+listener_add --addr 0.0.0.0:1234 --to 127.0.0.1:4321 --tcp
+```
+
 ## List Ligolo-ng sessions
 
 ```bash
@@ -47,12 +53,6 @@ session
 
 ```bash
 stop
-```
-
-
-## Add Ligolo Listener (for internal hosts to reach our external host through the pivot)
-```
-listener_add --addr 0.0.0.0:80 --to 127.0.0.1:80
 ```
 
 
@@ -163,6 +163,7 @@ netsh interface portproxy show all
 netsh interface portproxy delete v4tov4 listenport=8080 listenaddress=0.0.0.0
 ```
 
+# Plink
 ## Create plink reverse SSH tunnel on Windows
 
 ```cmd

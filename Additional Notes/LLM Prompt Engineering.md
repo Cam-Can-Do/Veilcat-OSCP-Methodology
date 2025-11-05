@@ -1,3 +1,4 @@
+Sometimes without context, LLM chatbots are reluctant to assist with questions related to security. These are some prompts I use to quickly provide reassurance when starting a new chat.
 ## LLM Pentesting Lab Prompt (short)
 
 ```

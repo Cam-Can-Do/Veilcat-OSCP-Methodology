@@ -50,17 +50,7 @@ A successful zone transfer reveals:
 
 ## Subdomain Enumeration
 
-When zone transfer fails, brute force subdomains:
-
-**Common subdomains to look for:**
-- mail.domain.local
-- ftp.domain.local
-- vpn.domain.local
-- admin.domain.local
-- dev.domain.local
-- test.domain.local
-- staging.domain.local
-- portal.domain.local
+When zone transfer fails, brute force subdomains.
 
 **Wordlists:**
 - /usr/share/seclists/Discovery/DNS/subdomains-top1million-5000.txt (faster)
@@ -84,22 +74,6 @@ dig @$IP target-domain.com +norecurse
 ```
 
 If it returns a result, the domain was recently queried, revealing browsing habits.
-
-## DNS Tunneling Detection
-
-Look for signs of DNS tunneling (data exfiltration via DNS):
-- Excessive DNS queries
-- Unusually long DNS query names
-- High entropy in subdomain names
-- Queries to suspicious TLDs
-
-## Active Directory DNS
-
-In AD environments, DNS is critical:
-- Domain controllers register as _ldap._tcp.dc._msdcs.domain
-- Find DCs via SRV records: dig @$IP _ldap._tcp.dc._msdcs.domain.local SRV
-- Kerberos: _kerberos._tcp.domain.local
-- Global catalog: _gc._tcp.domain.local
 
 ---
 

