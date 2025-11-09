@@ -40,31 +40,6 @@ nmap -sU --top-ports 1000 -T4 -Pn $IP -oA nmap/extended_udp
 
 ---
 
-# Service Discovery Methodology
-
-## AutoRecon vs Manual
-
-Run manual scans first and start enumerating high priority services while autorecon runs in the background.
-## TCP Port Discovery Strategy
-
-Two-phase approach:
-1. Fast full port scan to find all open ports
-2. Detailed service detection only on open ports
-
-This is faster than running `-sC -sV -p-` directly, especially on boxes with few open ports.
-
-## UDP Scanning Considerations
-
-UDP scanning is slow. Prioritize based on time:
-- Top 100 ports: Always run (catches DNS, SNMP, TFTP)
-- Top 1000 ports: Run if you have time or suspect UDP services
-
-Common critical UDP services:
-- 53 (DNS)
-- 69 (TFTP)
-- 161 (SNMP)
-- 500 (IPSec)
-
 ---
 
 # Service-Specific Enumeration Checklist 

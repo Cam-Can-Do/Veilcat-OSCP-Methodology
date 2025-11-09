@@ -4,29 +4,29 @@
 
 ## Initial Enumeration (Always Run First)
 
-- [ ] [[Linux Privilege Escalation#LinPEAS (Kali Source)|LinPEAS (Kali Source)]]
+- [ ] Run LinPEAS: [[Linux Privilege Escalation#LinPEAS (Kali Source)|LinPEAS (Kali Source)]]
 - [ ] Run basic context: `id`, `whoami`, `hostname`, `uname -a`
 - [ ] Check sudo rights: `sudo -l`
-- [ ] Check SUID binaries: `find / -perm -u=s -type f 2>/dev/null`
+- [ ] Check SUID binaries: [[Linux Privilege Escalation#Find SUID files|Find SUID files]]
 - [ ] List cronjobs: `cat /etc/crontab` and `ls -la /etc/cron.*`
-- [ ] Check writable paths: `find / -writable -type d 2>/dev/null | grep -v proc`
+- [ ] Check writable paths: [[Linux Privilege Escalation#Find writable directories|Find writable directories]]
 
 ## Credential Hunting (Even If You Already Have Access)
 
 **DO NOT ASSUME you found all credentials. Always check:**
 
-- [ ] Search home directories: `find /home -type f -name "*.txt" -o -name "*.conf" -o -name "*.bak" 2>/dev/null`
-- [ ] Check bash history: `cat ~/.bash_history` and `cat /home/*/.bash_history 2>/dev/null`
-- [ ] Search for passwords in files: `grep -r "password" /home /var/www /opt 2>/dev/null | grep -v Binary`
-- [ ] Check for SSH keys: `find / -name id_rsa -o -name id_dsa -o -name id_ecdsa 2>/dev/null`
-- [ ] Database config files: `find / -name "*config*.php" -o -name "*config*.py" 2>/dev/null`
-- [ ] Check `/opt`, `/var/backups`, `/tmp`: `ls -laR /opt /var/backups /tmp 2>/dev/null`
+- [ ] Search for backup files: [[Linux Privilege Escalation#Find backup files|Find backup files]]
+- [ ] Check bash history: [[Linux Privilege Escalation#Check bash history|Check bash history]]
+- [ ] Search for passwords in /etc: [[Linux Privilege Escalation#grep etc for password|grep etc for password]]
+- [ ] Search webroot for passwords: [[Linux Privilege Escalation#grep webroot for password|grep webroot for password]]
+- [ ] Check for private keys: [[Linux Privilege Escalation#grep for private keys|grep for private keys]]
+- [ ] Check application configs: [[Linux Privilege Escalation#Check application configs|Check application configs]]
 
 ## Quick Win Checks (High Priority)
 
 - [ ] GTFOBins sudo: If `sudo -l` shows anything, check https://gtfobins.github.io/
 - [ ] Writable /etc/passwd: `ls -la /etc/passwd` (if writable, add root user)
-- [ ] Docker group: If `id` shows docker group, exploit with `docker run -v /:/mnt --rm -it alpine chroot /mnt sh`
+- [ ] Docker group: If `id` shows docker group, use [[Linux Privilege Escalation#Docker escape to host|Docker escape to host]]
 - [ ] LXD/LXC group: If in lxd group, exploit container escape
 - [ ] Kernel exploits: Check `uname -r` against known exploits (last resort - can crash system)
 
@@ -40,7 +40,7 @@
 ## SUID/Capabilities Exploitation
 
 - [ ] Review SUID binary list for GTFOBins entries
-- [ ] Check capabilities: `getcap -r / 2>/dev/null` (python, perl, tar with cap_setuid can privesc)
+- [ ] Check capabilities: [[Linux Privilege Escalation#Find files with capabilities|Find files with capabilities]]
 - [ ] Test writable paths in SUID binary execution (PATH hijacking)
 
 ## Cronjob/Scheduled Task Abuse

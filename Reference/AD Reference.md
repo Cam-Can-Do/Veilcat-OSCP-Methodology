@@ -1,6 +1,6 @@
 # Active Directory Attack Reference
 
-Extended AD methodology reference. For core commands, see [[Active Directory Attack Chain]]. For systematic credential testing, use [[CHECKLIST-AD-Domain]].
+Extended AD methodology reference. For core commands, see [[Active Directory]]. For systematic credential testing, use [[CHECKLIST-AD-Domain]].
 
 ## Attack Chain Decision Trees
 

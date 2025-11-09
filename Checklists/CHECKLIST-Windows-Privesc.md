@@ -4,7 +4,7 @@
 
 ## Initial Enumeration (Always Run First)
 
-- [ ] Run WinPEAS: `.\winPEASx64.exe | Tee-Object winpeas_output.txt`
+- [ ] Run WinPEAS: [[Windows Privilege Escalation#WinPEAS (Source)|WinPEAS (Source)]] then execute with [[Windows Privilege Escalation#PowerShell Tee|PowerShell Tee]]
 - [ ] Check current user and privileges: `whoami /all`
 - [ ] Check local users: `net user` and `net localgroup administrators`
 - [ ] Check system info: `systeminfo`
@@ -13,22 +13,21 @@
 
 ## Immediate Win Checks (Check These FIRST)
 
-- [ ] **SeImpersonatePrivilege enabled?** `whoami /priv` → If YES, use SweetPotato immediately
-- [ ] **SeAssignPrimaryTokenPrivilege enabled?** → If YES, use SweetPotato immediately
+- [ ] **SeImpersonatePrivilege enabled?** `whoami /priv` → If YES, use [[Windows Privilege Escalation#SweetPotato nc shell|SweetPotato nc shell]]
+- [ ] **SeAssignPrimaryTokenPrivilege enabled?** → If YES, use [[Windows Privilege Escalation#SweetPotato nc shell|SweetPotato nc shell]]
 - [ ] **In Administrators group?** `whoami /groups` → If YES, you may already have admin (UAC bypass?)
-- [ ] AlwaysInstallElevated set? `reg query HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer /v AlwaysInstallElevated`
+- [ ] AlwaysInstallElevated set? [[Windows Privilege Escalation#Check for AlwaysInstallElevated|Check for AlwaysInstallElevated]]
 
 ## Credential Hunting (DO NOT SKIP - Even If You Have Admin)
 
 **Your biggest weakness: Skipping this after initial access. ALWAYS CHECK:**
 
-- [ ] PowerShell history for ALL users: `Get-ChildItem -Path C:\Users\*\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt -Recurse -ErrorAction SilentlyContinue`
-- [ ] Read each history file: `type <path>` (look for passwords, admin commands)
-- [ ] Check for interesting files in user directories: `Get-ChildItem -Path C:\Users -Include *.txt,*.ini,*.kdbx,*.exe -Recurse -ErrorAction SilentlyContinue`
+- [ ] PowerShell history ALL users: [[Windows Privilege Escalation#Find PSReadline history|Find PSReadline history]] then `type` each file
+- [ ] Search for interesting files: [[Windows Privilege Escalation#Search for files|Search for files]]
 - [ ] Download and `strings` any unusual .exe files found (may contain hardcoded creds)
-- [ ] Registry autologon creds: `reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon"`
+- [ ] Registry autologon creds: [[Windows Privilege Escalation#Check autologon registry|Check autologon registry]]
 - [ ] Saved credentials: `cmdkey /list`
-- [ ] Search for passwords in files: `findstr /si "password" C:\Users\*.txt C:\Users\*.xml C:\Users\*.ini 2>nul`
+- [ ] Search for database files: [[Windows Privilege Escalation#Search for database files|Search for database files]]
 
 ## Web Application Enumeration (If Web Server Present)
 
@@ -49,19 +48,19 @@
 
 ## Service Exploitation
 
-- [ ] Check for unquoted service paths: `Get-WmiObject -Class Win32_Service | Where-Object {$_.PathName -notlike '*"*' -and $_.PathName -like '* *'}`
+- [ ] Check for unquoted service paths: [[Windows Privilege Escalation#Find unquoted services|Find unquoted services]]
 - [ ] Check service permissions: Look in WinPEAS output for modifiable services
 - [ ] Check writable service binaries: Can you replace any service .exe?
-- [ ] Check scheduled tasks: `schtasks /query /fo LIST /v` (writable task binaries?)
+- [ ] Check scheduled tasks: [[Windows Privilege Escalation#List scheduled tasks|List scheduled tasks]] (writable task binaries?)
 
 ## After Getting SYSTEM (DO NOT SKIP THIS)
 
 **EVEN WITH SYSTEM, enumerate for lateral movement credentials:**
 
-- [ ] Run Mimikatz: `.\mimikatz.exe "privilege::debug" "sekurlsa::logonpasswords" "exit" > mimikatz.txt`
+- [ ] Run Mimikatz: [[Windows Privilege Escalation#Mimikatz logonpasswords|Mimikatz logonpasswords]]
 - [ ] Review Mimikatz output: Extract all NTLM hashes and plaintext passwords
 - [ ] Test credentials across domain/network: `netexec smb <targets> -u <users> -H <hashes>`
-- [ ] Re-check PowerShell histories: `type C:\Users\*\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt`
+- [ ] Re-check PowerShell histories: [[Windows Privilege Escalation#Find PSReadline history|Find PSReadline history]]
 - [ ] Check for additional unusual files/programs missed earlier
 - [ ] Review network interfaces: `ipconfig /all` → Pivoting needed?
 
