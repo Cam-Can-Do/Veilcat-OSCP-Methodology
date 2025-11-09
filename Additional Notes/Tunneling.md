@@ -31,10 +31,15 @@ start
 ```
 
 
-## Add route for Ligolo-ng tunnel (5/5)
+## Add route for Ligolo-ng tunnel for subnet (5/5)
 Replace the IP/subnet with that of the internal network that we're using the agent to pivot to. 
 ```bash
 sudo ip route add 192.168.1.0/24 dev ligolo
+```
+
+## Add route for Ligolo-ng tunnel for local forwarding (5/5)
+```
+sudo ip route add 240.0.0.1/32 dev ligolo
 ```
 
 ## Ligolo-ng Listener Add
@@ -43,11 +48,6 @@ Routes :1234 on the agent to 4321 on the proxy server.
 listener_add --addr 0.0.0.0:1234 --to 127.0.0.1:4321 --tcp
 ```
 
-## List Ligolo-ng sessions
-
-```bash
-session
-```
 
 ## Stop Ligolo-ng tunnel
 

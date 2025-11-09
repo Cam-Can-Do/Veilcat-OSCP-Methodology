@@ -11,10 +11,12 @@ nmap -sU -p 1434 $IP
 ```
 
 ## Connect with impacket-mssqlclient
+Anonymous, SQL auth sa:password@IP, OR domain.local/user:pass@IP -windows-auth
 ```bash
-# Anonymous, SQL auth sa:password@IP, OR domain.local/user:pass@IP -windows-auth
 impacket-mssqlclient sa:password@$IP
 ```
+
+
 
 ## Brute force MSSQL with hydra
 ```bash
