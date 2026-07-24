@@ -74,6 +74,19 @@ nmap -Pn -n --unprivileged -sT 172.16.5.10
 ssh -L 8080:172.16.5.10:80 user@<foothold>
 ```
 
+## Expose a localhost-only Windows service with portproxy
+```cmd
+netsh interface portproxy add v4tov4 listenaddress=0.0.0.0 listenport=8080 connectaddress=127.0.0.1 connectport=8080
+netsh advfirewall firewall add rule name="portproxy_8080" dir=in action=allow protocol=TCP localport=8080
+```
+
+## Show and delete portproxy rules
+```cmd
+netsh interface portproxy show all
+netsh interface portproxy delete v4tov4 listenaddress=0.0.0.0 listenport=8080
+netsh advfirewall firewall delete rule name="portproxy_8080"
+```
+
 ## Dynamic SOCKS proxy with SSH
 ```bash
 ssh -D 9050 user@<foothold>
@@ -82,4 +95,9 @@ ssh -D 9050 user@<foothold>
 ## Remote port forward with SSH
 ```bash
 ssh -R 8080:127.0.0.1:80 user@<foothold>
+```
+
+## Rule
+```text
+If a useful service binds to 127.0.0.1 and you already have shell access, expose it immediately before chasing other paths.
 ```

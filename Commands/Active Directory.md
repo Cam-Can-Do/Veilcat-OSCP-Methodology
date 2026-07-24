@@ -36,6 +36,15 @@ netexec winrm hosts.txt -u user -p 'password'
 netexec ldap <DC-IP> -u user -p 'password' --users --groups --computers --pass-pol
 ```
 
+## If LDAP bind or collection fails
+```text
+1. sync time again
+2. verify the creds against SMB on the DC
+3. verify name resolution for the DC and domain
+4. validate LDAP with [[389,636 LDAP(S)#Check who you are after an authenticated bind]]
+5. keep enumerating manually even if BloodHound is broken
+```
+
 ## Test MSSQL on all hosts
 ```bash
 netexec mssql hosts.txt -u user -p 'password'
