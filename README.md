@@ -7,7 +7,7 @@ See `Templates/`. Make a copy of `IP Hostname (OpIndex).md` for each machine, an
 
 For each machine, start in [[Service Discovery]], and enumerate services from the notes in `Runbooks/Services`. After gaining initial access, use the relevant privilege escalation note. If you get admin/root, do the post-exploitation sections in the privesc notes before pivoting with [[Tunneling]].
 
-If the machine is part of a larger network or domain, use [[Active Directory]] and [[AD Domain]].
+If the machine is part of a larger network or domain, use [[Active Directory]] and [[AD Domain (OpIndex)]].
 
 Use [[Shell Delivery and Transfer]] for your standard handler, ports, shell payloads, and file transfer workflow.
 
